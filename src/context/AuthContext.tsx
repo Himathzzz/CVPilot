@@ -6,6 +6,7 @@ export interface UserSession {
   uid: string;
   email: string | null;
   displayName: string | null;
+  photoURL?: string | null;
 }
 
 interface AuthContextType {
@@ -24,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserSession | null>(() => {
     const saved = localStorage.getItem('cvpilot_user_session');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return null; }
+      try { return JSON.parse(saved); } catch (_e) { return null; }
     }
     return null;
   });
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Architect User',
+          photoURL: firebaseUser.photoURL,
         };
         setUser(session);
         localStorage.setItem('cvpilot_user_session', JSON.stringify(session));

@@ -78,15 +78,15 @@ export default {
         "md": "16px"
       },
       fontFamily: {
-        "sans": ["Montserrat", "sans-serif"],
-        "display": ["Montserrat", "sans-serif"],
-        "h2": ["Montserrat", "sans-serif"],
-        "body-lg": ["Montserrat", "sans-serif"],
-        "h1": ["Montserrat", "sans-serif"],
-        "h1-mobile": ["Montserrat", "sans-serif"],
-        "body-md": ["Montserrat", "sans-serif"],
-        "label-caps": ["Montserrat", "sans-serif"],
-        "caption": ["Montserrat", "sans-serif"]
+        "sans": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "display": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "h2": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "body-lg": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "h1": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "h1-mobile": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "body-md": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "label-caps": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"],
+        "caption": ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica", "Arial", "sans-serif"]
       },
       fontSize: {
         "display": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
