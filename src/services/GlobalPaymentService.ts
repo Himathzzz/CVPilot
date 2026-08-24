@@ -39,8 +39,8 @@ export const PAYMENT_GATEWAYS: PaymentGatewayInfo[] = [
   {
     id: 'payhere',
     name: 'PayHere LK (Credit Cards & Mobile Wallets)',
-    badge: 'Sri Lanka & Global • Direct Payout',
-    description: 'Pay securely using Visa, MasterCard, AMEX, eZ Cash, mCash, or Sampath Vishwa via PayHere LK payment gateway.',
+    badge: 'COMING SOON • Approval Pending',
+    description: 'PayHere online checkout is currently undergoing final merchant approval and will be enabled very shortly.',
     icon: 'payments',
     supportedMethods: ['Visa', 'MasterCard', 'AMEX', 'eZ Cash', 'mCash', 'Sampath Vishwa'],
     developerPayoutNote: 'Direct Deposit to Sri Lankan Bank Account in LKR/USD',

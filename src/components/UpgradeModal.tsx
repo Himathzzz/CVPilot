@@ -310,71 +310,73 @@ export const UpgradeModal: React.FC = () => {
             </div>
           </div>
 
-          {/* TAB 1: PAYHERE CHECKOUT */}
+          {/* TAB 1: PAYHERE CHECKOUT / COMING SOON */}
           {activeTab === 'payhere' && (
             <div className="space-y-4">
-              {/* PayHere Checkout Card */}
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-slate-900 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
-                    <span className="material-symbols-outlined text-base">payments</span>
-                    PayHere LK Payment Gateway
-                  </div>
-                  <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase ${
-                    GlobalPaymentService.getPayHereConfig().isLive
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-amber-500 text-navy'
-                  }`}>
-                    {GlobalPaymentService.getPayHereConfig().envName}
+              <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-4 shadow-xl relative overflow-hidden">
+                {/* Background Decorative Mesh */}
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+
+                {/* PayHere Logo Graphic */}
+                <div className="inline-flex items-center justify-center gap-1.5 px-6 py-3 bg-[#002B49] rounded-2xl border border-blue-500/30 shadow-md">
+                  <span className="font-black text-2xl text-white tracking-tight">Pay</span>
+                  <span className="font-black text-2xl text-emerald-400 tracking-tight">Here</span>
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-black px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-widest ml-1">
+                    LK
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Pay securely using any major Credit or Debit Card (Visa, MasterCard, AMEX), eZ Cash, mCash, or Sampath Vishwa.
-                </p>
+                {/* Status Tag */}
+                <div>
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider animate-pulse">
+                    <span className="material-symbols-outlined text-sm">schedule</span>
+                    PayHere Coming Soon... (Approval Pending)
+                  </span>
+                </div>
+
+                {/* Explanation Text */}
+                <div className="space-y-2 max-w-md mx-auto">
+                  <h3 className="text-lg font-bold text-white">
+                    PayHere Payment Gateway Coming Soon!
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Our official PayHere Sri Lanka merchant account is currently undergoing final approval. Online checkout via Credit/Debit Cards (Visa, MasterCard, AMEX), eZ Cash, mCash, and Sampath Vishwa will be enabled very shortly!
+                  </p>
+                </div>
+
+                {/* Supported Features Checklist */}
+                <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700/80 text-left text-xs space-y-2 text-slate-300">
+                  <div className="font-bold text-white flex items-center gap-1.5 border-b border-slate-700/60 pb-2">
+                    <span className="material-symbols-outlined text-emerald-400 text-base">verified</span>
+                    Supported Payment Methods Upon Launch:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300 font-medium pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-emerald-400">✓</span> Visa & MasterCard (LKR / USD)
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-emerald-400">✓</span> American Express (AMEX)
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-emerald-400">✓</span> eZ Cash & mCash Mobile Wallets
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-emerald-400">✓</span> Sampath Vishwa Bank
+                    </div>
+                  </div>
+                </div>
 
                 <button
                   type="button"
                   onClick={handleOpenPayHereCheckout}
                   disabled={isProcessing}
-                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider border border-slate-700 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  <span className={`material-symbols-outlined text-base ${isProcessing ? 'spin' : ''}`}>
-                    {isProcessing ? 'sync' : 'shopping_cart_checkout'}
-                  </span>
-                  {isProcessing ? 'Opening PayHere...' : `Pay ${GlobalPaymentService.formatPrice(selectedCurrency)} with PayHere`}
+                  <span className="material-symbols-outlined text-sm text-amber-400">science</span>
+                  {isProcessing ? 'Opening PayHere...' : 'Test Sandbox Checkout (Dev Mode)'}
                 </button>
-
-                {hostedPageOpened && (
-                  <div className="pt-2 border-t border-emerald-200 dark:border-emerald-800/60 animate-fade-in space-y-2">
-                    <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">info</span>
-                      PayHere checkout page opened. Once paid, click below to confirm:
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleConfirmHostedPayment}
-                      disabled={isProcessing}
-                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <span className="material-symbols-outlined text-base">verified</span>
-                      {isProcessing ? 'Verifying Payment...' : 'I Completed Payment — Activate Pro Now'}
-                    </button>
-                  </div>
-                )}
               </div>
-
-              {!GlobalPaymentService.getPayHereConfig().isLive && (
-                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 p-3 rounded-xl text-[11px] text-amber-900 dark:text-amber-300 flex items-start gap-2">
-                  <span className="material-symbols-outlined text-base text-amber-600 mt-0.5">info</span>
-                  <div>
-                    <span className="font-bold">PayHere Account Approval Status:</span>
-                    <p className="mt-0.5 opacity-90">
-                      PayHere Sandbox is active. You can safely perform end-to-end test payments right now using PayHere test cards while your live merchant account approval is pending.
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
