@@ -73,12 +73,12 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({
               </section>
 
               <section className="space-y-3">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Third-Party Payment Processing & Paddle</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Third-Party Payment Processing & PayHere</h2>
                 <p>
                   We do not directly store or handle sensitive payment card numbers on our servers.
                 </p>
                 <p className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs leading-relaxed text-slate-800 dark:text-slate-200">
-                  <strong>Paddle.com</strong> acts as our Merchant of Record for all order processing. All payment transactions are encrypted using 256-bit SSL protocol. Paddle collects billing addresses, transaction details, and payment credentials under their strict PCI-DSS Level 1 compliance standards. You may review Paddle’s privacy policy at <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline">https://www.paddle.com/legal/privacy</a>.
+                  <strong>PayHere (payhere.lk)</strong> acts as our payment processing gateway for all order processing. All payment transactions are encrypted using 256-bit SSL protocol. PayHere collects billing addresses, transaction details, and payment credentials under strict PCI-DSS compliance standards. You may review PayHere’s privacy policy at <a href="https://www.payhere.lk/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline">https://www.payhere.lk/privacy</a>.
                 </p>
               </section>
 

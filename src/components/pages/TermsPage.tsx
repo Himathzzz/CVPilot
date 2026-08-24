@@ -74,19 +74,19 @@ export const TermsPage: React.FC<TermsPageProps> = ({
               </section>
 
               <section className="space-y-3">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Merchant of Record & Payment Processing</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Payment Gateway & Processing</h2>
                 <p>
-                  Our order process and payment handling are conducted by our online reseller <strong>Paddle.com</strong>.
+                  Our order process and payment handling are conducted by our online payment gateway <strong>PayHere (payhere.lk)</strong>.
                 </p>
                 <p className="bg-blue-50 dark:bg-blue-950/40 p-4 rounded-xl border border-blue-200 dark:border-blue-800 text-xs leading-relaxed text-blue-900 dark:text-blue-200">
-                  <strong>Paddle.com Market Ltd</strong> is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. When purchasing a Pro Membership, you will provide payment information directly to Paddle, governed by Paddle’s Buyer Terms of Service and Privacy Policy.
+                  <strong>PayHere Payments</strong> handles payment processing for all our orders. PayHere provides transaction security and handles billing operations. When purchasing a Pro Membership, your payment information is securely processed by PayHere, governed by PayHere’s Terms of Service and Privacy Policy.
                 </p>
               </section>
 
               <section className="space-y-3">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">4. Subscription Renewal & Billing</h2>
                 <p>
-                  Pro Membership subscriptions are billed on a monthly recurring schedule ($5.00/month or local equivalent). By subscribing, you authorize Paddle.com to charge your designated payment method on a recurring monthly basis until you cancel. You may cancel your subscription auto-renewal at any time through your account settings or by contacting our support team.
+                  Pro Membership subscriptions are billed on a monthly recurring schedule ($5.00/month or local equivalent). By subscribing, you authorize PayHere to charge your designated payment method on a recurring monthly basis until you cancel. You may cancel your subscription auto-renewal at any time through your account settings or by contacting our support team.
                 </p>
               </section>
 

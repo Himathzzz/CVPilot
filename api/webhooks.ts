@@ -1,5 +1,5 @@
 /**
- * Serverless Production Webhook Handler for Paddle.com Merchant of Record & Crypto
+ * Serverless Production Webhook Handler for PayHere (payhere.lk) & Payment Gateway
  */
 
 export interface WebhookEvent {
@@ -7,22 +7,19 @@ export interface WebhookEvent {
   data: any;
 }
 
-export async function handlePaddleWebhook(reqBody: any, headers: Record<string, string>) {
-  const signature = headers['paddle-signature'];
-  if (!signature) {
-    return { status: 400, body: { error: 'Missing Paddle-Signature header' } };
-  }
+export async function handlePayHereWebhook(reqBody: any, headers: Record<string, string>) {
+  const signature = headers['payhere-signature'] || headers['x-payhere-signature'];
+  
+  const { event_type, data, merchant_id, order_id, payhere_amount, status_code } = reqBody || {};
 
-  const { event_type, data } = reqBody;
-
-  // Process completed Paddle transactions
-  if (event_type === 'transaction.completed' || event_type === 'subscription.created') {
-    const userId = data.custom_data?.user_id || data.custom_data?.userId;
-    console.log(`[Paddle Webhook Success] Activating Pro membership for User ID: ${userId}`);
+  // Process completed PayHere transactions (status_code 2 indicates successful payment)
+  if (status_code === 2 || status_code === '2' || event_type === 'PAYMENT_SUCCESS') {
+    const userId = data?.custom_1 || data?.custom_data?.userId || reqBody?.custom_1;
+    console.log(`[PayHere Webhook Success] Activating Pro membership for User ID: ${userId}, Order ID: ${order_id}`);
 
     return {
       status: 200,
-      body: { success: true, userId, event: event_type }
+      body: { success: true, userId, orderId: order_id, event: event_type || 'PAYMENT_SUCCESS' }
     };
   }
 

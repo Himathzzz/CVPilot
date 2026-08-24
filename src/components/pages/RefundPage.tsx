@@ -82,7 +82,7 @@ export const RefundPage: React.FC<RefundPageProps> = ({
                 <ol className="list-decimal pl-6 space-y-2">
                   <li>Log in to your account at <a href="https://cvpilot.space" className="text-blue-600 dark:text-blue-400 underline">https://cvpilot.space</a>.</li>
                   <li>Navigate to your Account Dashboard or click "Cancel Pro Subscription" in the billing section.</li>
-                  <li>Alternatively, click the Manage Subscription link in your Paddle email invoice.</li>
+                  <li>Alternatively, click the Manage Subscription link in your PayHere email payment confirmation.</li>
                 </ol>
                 <p className="text-xs text-slate-500 dark:text-slate-400 pt-1">
                   Upon cancellation, auto-renewal will cease immediately. You will retain full access to Pro features until the remainder of your paid billing period concludes.
@@ -90,12 +90,12 @@ export const RefundPage: React.FC<RefundPageProps> = ({
               </section>
 
               <section className="space-y-3">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Merchant of Record & Refund Disbursement</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">3. Payment Gateway & Refund Disbursement</h2>
                 <p>
-                  Our orders and transactions are managed by <strong>Paddle.com</strong>.
+                  Our orders and transactions are managed by <strong>PayHere (payhere.lk)</strong>.
                 </p>
                 <p className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs leading-relaxed text-slate-800 dark:text-slate-200">
-                  <strong>Paddle.com Market Ltd</strong> acts as the Merchant of Record. Approved refunds are credited directly back to your original payment method (Credit Card, Debit Card, PayPal, Apple Pay, or Google Pay) through Paddle's payment network within 3–5 business days depending on your issuing bank.
+                  <strong>PayHere Payments</strong> acts as our online payment processing gateway. Approved refunds are credited directly back to your original payment method (Credit/Debit Card, Mobile Wallet, or Net Banking) through PayHere's payment network within 3–5 business days depending on your issuing bank.
                 </p>
               </section>
 
@@ -106,8 +106,8 @@ export const RefundPage: React.FC<RefundPageProps> = ({
                   <p><strong>Option A: Direct Support Email (Recommended)</strong></p>
                   <p>Send an email to <a href="mailto:cvpilot.site.je@gmail.com" className="font-bold underline text-blue-600 dark:text-blue-400">cvpilot.site.je@gmail.com</a> with your account email address and order number. Our team responds within 24 hours to process your refund.</p>
                   <hr className="border-blue-200 dark:border-blue-800" />
-                  <p><strong>Option B: Paddle Buyer Support</strong></p>
-                  <p>Visit Paddle Buyer Support at <a href="https://paddle.net" target="_blank" rel="noopener noreferrer" className="font-bold underline text-blue-600 dark:text-blue-400">https://paddle.net</a> or use the receipt link in your email to contact Paddle directly.</p>
+                  <p><strong>Option B: PayHere Payment Support</strong></p>
+                  <p>Visit PayHere Support at <a href="https://www.payhere.lk" target="_blank" rel="noopener noreferrer" className="font-bold underline text-blue-600 dark:text-blue-400">https://www.payhere.lk</a> or check the receipt link in your email payment confirmation.</p>
                 </div>
               </section>
 
