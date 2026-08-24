@@ -51,7 +51,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
             <>
               <p className="font-semibold">Last Updated: August 2026</p>
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">1. Information We Collect</h4>
-              <p>We collect personal information provided directly by users, including name, contact details, work history, education, and payment information processed securely via Payoneer Checkout and Crypto.</p>
+              <p>We collect personal information provided directly by users, including name, contact details, work history, education, and payment information processed securely via PayHere LK.</p>
               
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">2. Data Security</h4>
               <p>All transmitted data is encrypted using 256-bit SSL encryption. We adhere to industry best practices to secure your resume content and payment tokens.</p>

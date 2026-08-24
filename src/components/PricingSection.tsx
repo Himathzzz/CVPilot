@@ -139,7 +139,7 @@ export const PricingSection: React.FC = () => {
                 </li>
                 <li className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-blue-600 text-base">public</span>
-                  <span>Global Access (Payoneer & Credit Cards / Crypto)</span>
+                  <span>Global Access (PayHere Cards & Mobile Wallets)</span>
                 </li>
               </ul>
             </div>

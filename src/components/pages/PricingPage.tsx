@@ -170,7 +170,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                   </li>
                   <li className="flex items-center gap-2.5">
                     <span className="material-symbols-outlined text-blue-600 text-base">public</span>
-                    <span>Global Access (PayPal & Credit Cards / Crypto)</span>
+                    <span>Global Access (PayHere Cards & Mobile Wallets)</span>
                   </li>
                 </ul>
               </div>

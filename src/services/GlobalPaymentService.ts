@@ -1,6 +1,5 @@
 /**
- * Global Payment Service - Payoneer Checkout & Crypto Engine
- * Tailored for global payouts and instant subscriptions.
+ * Global Payment Service - PayHere LK Payment Gateway Engine
  */
 
 export interface CurrencyConfig {
@@ -20,9 +19,7 @@ export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
   { code: 'INR', symbol: '₹', amount: 420, monthlyText: '₹420 / month', name: 'Indian Rupee', flag: '🇮🇳' },
 ];
 
-export const PAYONEER_PAYMENT_URL = import.meta.env.VITE_PAYONEER_PAYMENT_LINK || 'https://payoneer.me/cvpilot';
-
-export type PaymentGatewayId = 'payhere' | 'payoneer' | 'crypto';
+export type PaymentGatewayId = 'payhere';
 
 export interface PaymentGatewayInfo {
   id: PaymentGatewayId;
@@ -45,26 +42,6 @@ export const PAYMENT_GATEWAYS: PaymentGatewayInfo[] = [
     supportedMethods: ['Visa', 'MasterCard', 'AMEX', 'eZ Cash', 'mCash', 'Sampath Vishwa'],
     developerPayoutNote: 'Direct Deposit to Sri Lankan Bank Account in LKR/USD',
     isMerchantOfRecord: false
-  },
-  {
-    id: 'payoneer',
-    name: 'Payoneer & Cards',
-    badge: 'Instant Access • Global Merchant',
-    description: 'Pay securely using your Credit/Debit Card (Visa, MasterCard, Amex) or Payoneer Account via Payoneer Checkout.',
-    icon: 'credit_card',
-    supportedMethods: ['Payoneer Checkout', 'Visa', 'MasterCard', 'Amex', 'Debit Cards'],
-    developerPayoutNote: 'Instant Settlement directly to Payoneer Balance',
-    isMerchantOfRecord: false
-  },
-  {
-    id: 'crypto',
-    name: 'Crypto / Web3 (USDT)',
-    badge: 'Zero Border Friction',
-    description: 'Pay instantly using USDT (TRC-20) with instant blockchain verification.',
-    icon: 'currency_bitcoin',
-    supportedMethods: ['USDT (TRC-20)', 'USDC (Polygon)', 'Binance Pay'],
-    developerPayoutNote: 'Direct Web3 Wallet Transfer (Instant Settlement)',
-    isMerchantOfRecord: false
   }
 ];
 
@@ -74,113 +51,6 @@ export class GlobalPaymentService {
    */
   static formatPrice(currency: CurrencyConfig): string {
     return `${currency.symbol}${currency.amount}`;
-  }
-
-  /**
-   * Returns Payoneer Merchant Code configured in environment
-   */
-  static getPayoneerMerchantCode(): string {
-    return import.meta.env.VITE_PAYONEER_MERCHANT_CODE || 'cvpilot_merchant_sandbox';
-  }
-
-  /**
-   * Helper to get supported Payoneer ISO currency and amount.
-   * Converts unsupported currencies like LKR or INR to standard USD for Payoneer Checkout.
-   */
-  static getPayoneerCurrencyInfo(currency: CurrencyConfig): { currencyCode: string; amount: string } {
-    if (currency.code === 'USD' || currency.code === 'EUR' || currency.code === 'GBP') {
-      return { currencyCode: currency.code, amount: currency.amount.toFixed(2) };
-    }
-    return { currencyCode: 'USD', amount: '5.00' };
-  }
-
-  /**
-   * Returns developer Sandbox credentials for testing
-   */
-  static getPayoneerSandboxInfo() {
-    return {
-      merchantCode: import.meta.env.VITE_PAYONEER_MERCHANT_CODE || 'cvpilot_sandbox_code',
-      apiUsername: import.meta.env.VITE_PAYONEER_API_USERNAME || 'sandbox_api_user@cvpilot.com'
-    };
-  }
-
-  /**
-   * Generates a Payoneer REST Checkout Order session URL using official API credentials or hosted payment link fallback.
-   * Auto-detects Sandbox vs Live environment based on credential validation.
-   */
-  static async createPayoneerOrderUrl(currencyCode: string = 'USD', amount: string = '5.00'): Promise<string> {
-    const merchantCode = this.getPayoneerMerchantCode();
-    const apiUsername = import.meta.env.VITE_PAYONEER_API_USERNAME || '';
-    const apiPassword = import.meta.env.PAYONEER_API_PASSWORD || '';
-    const customPaymentLink = import.meta.env.VITE_PAYONEER_PAYMENT_LINK;
-
-    if (customPaymentLink) {
-      return customPaymentLink;
-    }
-
-    if (apiUsername && apiPassword) {
-      const auth = btoa(`${apiUsername}:${apiPassword}`);
-      const endpoints = [
-        {
-          base: 'https://api.sandbox.payoneer.com/v1',
-          checkoutBase: 'https://checkout.sandbox.payoneer.com'
-        },
-        {
-          base: 'https://api.live.payoneer.com/v1',
-          checkoutBase: 'https://checkout.payoneer.com'
-        }
-      ];
-
-      for (const ep of endpoints) {
-        try {
-          const response = await fetch(`${ep.base}/accounts/${merchantCode}/checkout/sessions`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Basic ${auth}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              transactionId: `CVP-${Date.now()}`,
-              country: 'US',
-              currency: currencyCode,
-              amount: parseFloat(amount),
-              payment: {
-                reference: 'CV PILOT Pro Membership - Unlimited CVs & AI Features'
-              },
-              callback: {
-                returnUrl: `${window.location.origin}/?payment=success`,
-                cancelUrl: `${window.location.origin}/?payment=cancelled`,
-                notificationUrl: `${window.location.origin}/api/webhooks`
-              }
-            })
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.redirectUrl) return data.redirectUrl;
-            if (data.links?.redirect) return data.links.redirect;
-            if (data.sessionToken) return `${ep.checkoutBase}/paymentpage?token=${data.sessionToken}`;
-          }
-        } catch (err) {
-          console.warn(`[Payoneer ${ep.base} notice]:`, err);
-        }
-      }
-    }
-
-    // Direct Payoneer Hosted Checkout / Request Payment fallback
-    return PAYONEER_PAYMENT_URL;
-  }
-
-  /**
-   * Crypto Deposit Address & QR Info
-   */
-  static getCryptoDepositInfo() {
-    return {
-      usdtAddressTRC20: 'TYD4xQ9sU83hV1kZ8n3mXwR5L2p4q7vW1y',
-      usdcPolygonAddress: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
-      qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TYD4xQ9sU83hV1kZ8n3mXwR5L2p4q7vW1y',
-      instructions: 'Transfer $5.00 USDT via TRC-20 or Polygon USDC. Enter your transaction hash below to verify and activate Pro instantly.'
-    };
   }
 
   /**
@@ -254,6 +124,3 @@ export class GlobalPaymentService {
     document.body.removeChild(form);
   }
 }
-
-
-

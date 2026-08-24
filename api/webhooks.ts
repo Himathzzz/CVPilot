@@ -25,20 +25,3 @@ export async function handlePayHereWebhook(reqBody: any, headers: Record<string,
 
   return { status: 200, body: { received: true } };
 }
-
-export async function handlePayoneerWebhook(reqBody: any) {
-  const { event_type, result, transactionId, amount } = reqBody || {};
-
-  if (event_type === 'CHARGE.SUCCESS' || result === 'SUCCESS' || event_type === 'CHECKOUT.COMPLETED') {
-    console.log(`[Payoneer Webhook Success] Received payment of ${amount || '5.00'} for Transaction ID: ${transactionId}`);
-
-    return {
-      status: 200,
-      body: { success: true, transactionId, event: event_type || 'CHARGE.SUCCESS', amount }
-    };
-  }
-
-  return { status: 200, body: { received: true, event: event_type } };
-}
-
-
