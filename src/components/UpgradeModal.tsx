@@ -142,12 +142,12 @@ export const UpgradeModal: React.FC = () => {
                 <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
 
                 {/* PayHere Logo Graphic */}
-                <div className="inline-flex items-center justify-center gap-1.5 px-6 py-3 bg-[#002B49] rounded-2xl border border-blue-500/30 shadow-md">
-                  <span className="font-black text-2xl text-white tracking-tight">Pay</span>
-                  <span className="font-black text-2xl text-emerald-400 tracking-tight">Here</span>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-black px-2 py-0.5 rounded border border-emerald-500/30 uppercase tracking-widest ml-1">
-                    LK
-                  </span>
+                <div className="flex justify-center items-center py-1">
+                  <img 
+                    src="/payhere-logo.png" 
+                    alt="PayHere Payment Gateway" 
+                    className="h-14 md:h-16 w-auto object-contain drop-shadow-md mx-auto"
+                  />
                 </div>
 
                 {/* Status Tag */}
