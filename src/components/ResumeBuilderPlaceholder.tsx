@@ -830,16 +830,6 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
                 </span>
               </div>
 
-              <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 rounded-xl space-y-2 text-xs">
-                <div className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-base">check_circle</span>
-                  Ready to submit to recruiters!
-                </div>
-                <p className="text-emerald-700 dark:text-emerald-400">
-                  Your resume data passes all ATS readability checks. You can export as PDF or save to your account.
-                </p>
-              </div>
-
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button 
                   onClick={handleExportPDF}
