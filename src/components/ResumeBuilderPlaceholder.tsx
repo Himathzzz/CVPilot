@@ -367,7 +367,6 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
                 <span className="material-symbols-outlined text-amber-400 text-xl">auto_awesome</span>
                 <span className="font-bold text-xs uppercase tracking-wider">AI Content Generator</span>
               </div>
-              <span className="bg-blue-500/20 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/30">Gemini AI</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
