@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useMembership } from '../context/MembershipContext';
-import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
 import { 
   SUPPORTED_CURRENCIES, 
@@ -16,7 +15,6 @@ declare global {
 
 export const UpgradeModal: React.FC = () => {
   const { isUpgradeModalOpen, closeUpgradeModal, downgradeToFree, isProMember } = useMembership();
-  const { user, openAuthModal } = useAuth();
   
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -43,28 +41,7 @@ export const UpgradeModal: React.FC = () => {
 
   if (!isUpgradeModalOpen) return null;
 
-  // PayHere Checkout Handler
-  const handleOpenPayHereCheckout = () => {
-    if (!user) {
-      closeUpgradeModal();
-      openAuthModal();
-      return;
-    }
-    setPaymentError(null);
-    setIsProcessing(true);
-    try {
-      GlobalPaymentService.submitPayHereCheckout({
-        userEmail: user.email || undefined,
-        userName: user.displayName || undefined,
-        currency: selectedCurrency,
-      });
-      setIsProcessing(false);
-    } catch (err) {
-      console.warn('[PayHere checkout error]:', err);
-      setIsProcessing(false);
-      setPaymentError('Unable to open PayHere checkout. Please try again.');
-    }
-  };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
@@ -175,9 +152,9 @@ export const UpgradeModal: React.FC = () => {
 
                 {/* Status Tag */}
                 <div>
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider animate-pulse">
+                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                     <span className="material-symbols-outlined text-sm">schedule</span>
-                    PayHere Coming Soon... (Approval Pending)
+                    PayHere Coming Soon...
                   </span>
                 </div>
 
@@ -187,7 +164,7 @@ export const UpgradeModal: React.FC = () => {
                     PayHere Payment Gateway Coming Soon!
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Our official PayHere Sri Lanka merchant account is currently undergoing final approval. Online checkout via Credit/Debit Cards (Visa, MasterCard, AMEX), eZ Cash, mCash, and Sampath Vishwa will be enabled very shortly!
+                    Online checkout via Credit/Debit Cards (Visa, MasterCard, AMEX), eZ Cash, mCash, and Sampath Vishwa will be enabled very shortly!
                   </p>
                 </div>
 
@@ -212,16 +189,6 @@ export const UpgradeModal: React.FC = () => {
                     </div>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleOpenPayHereCheckout}
-                  disabled={isProcessing}
-                  className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase tracking-wider border border-slate-700 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <span className="material-symbols-outlined text-sm text-amber-400">science</span>
-                  {isProcessing ? 'Opening PayHere...' : 'Test Sandbox Checkout (Dev Mode)'}
-                </button>
               </div>
             </>
           )}
