@@ -40,10 +40,6 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({
             
             {/* Header */}
             <div className="border-b border-slate-200 dark:border-slate-800 pb-6 space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-                <span className="material-symbols-outlined text-sm">shield</span>
-                Data Protection & Privacy
-              </div>
               <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 Privacy Policy
               </h1>
