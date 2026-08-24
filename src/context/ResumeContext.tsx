@@ -42,42 +42,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Storage key helper for current user
   const storageKey = user ? `cvpilot_user_resumes_${user.uid}` : 'cvpilot_guest_resumes';
 
-  // Helper to generate default initial resumes for new users
-  const createDefaultResumes = (userName?: string, userEmail?: string): SavedUserResume[] => {
-    const initialData1 = getInitialResumeData(userName || 'Senior UX Designer', userEmail || 'designer@techcorp.com');
-    initialData1.title = 'Senior UX Designer Role';
-    initialData1.personalInfo.jobTitle = 'Senior UX & Product Designer';
-    initialData1.templateId = 'modern-minimal';
-
-    const initialData2 = getInitialResumeData(userName || 'Frontend Engineer', userEmail || 'engineer@startup.io');
-    initialData2.title = 'Frontend Engineer - Startup Profile';
-    initialData2.personalInfo.jobTitle = 'Senior Frontend Engineer';
-    initialData2.templateId = 'creative-sidebar';
-
-    const currentDateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-    return [
-      {
-        id: 'res_1',
-        title: initialData1.title,
-        templateId: initialData1.templateId,
-        lastEdited: currentDateStr,
-        status: 'draft',
-        data: initialData1,
-        config: getTemplateConfigById('modern-minimal'),
-      },
-      {
-        id: 'res_2',
-        title: initialData2.title,
-        templateId: initialData2.templateId,
-        lastEdited: currentDateStr,
-        status: 'published',
-        data: initialData2,
-        config: getTemplateConfigById('creative-sidebar'),
-      }
-    ];
-  };
-
   // Load user's saved resumes whenever logged-in user changes
   useEffect(() => {
     let isMounted = true;
@@ -99,7 +63,11 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       if (localData) {
         try {
-          loadedResumes = JSON.parse(localData);
+          const parsed = JSON.parse(localData);
+          if (Array.isArray(parsed)) {
+            // Filter out legacy default sample resumes (res_1, res_2)
+            loadedResumes = parsed.filter(r => r.id !== 'res_1' && r.id !== 'res_2');
+          }
         } catch (_e) {
           loadedResumes = [];
         }
@@ -111,7 +79,10 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (!querySnapshot.empty) {
           const cloudResumes: SavedUserResume[] = [];
           querySnapshot.forEach((docSnap) => {
-            cloudResumes.push(docSnap.data() as SavedUserResume);
+            const data = docSnap.data() as SavedUserResume;
+            if (data.id !== 'res_1' && data.id !== 'res_2') {
+              cloudResumes.push(data);
+            }
           });
           if (cloudResumes.length > 0) {
             loadedResumes = cloudResumes;
@@ -121,17 +92,10 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         console.warn('Firestore load fallback to localStorage:', err);
       }
 
-      // If no resumes exist for user yet, create initial default templates for user
-      if (loadedResumes.length === 0) {
-        loadedResumes = createDefaultResumes(user.displayName || undefined, user.email || undefined);
-      }
-
       if (isMounted) {
         setResumes(loadedResumes);
         localStorage.setItem(storageKey, JSON.stringify(loadedResumes));
-        if (loadedResumes.length > 0) {
-          setActiveResumeId(loadedResumes[0].id);
-        }
+        setActiveResumeId(loadedResumes.length > 0 ? loadedResumes[0].id : null);
         setIsLoading(false);
       }
     };
