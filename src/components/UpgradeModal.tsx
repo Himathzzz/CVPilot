@@ -23,7 +23,7 @@ export const UpgradeModal: React.FC = () => {
   const { user, openAuthModal } = useAuth();
   
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
-  const [activeTab, setActiveTab] = useState<PaymentGatewayId>('payoneer');
+  const [activeTab, setActiveTab] = useState<PaymentGatewayId>('payhere');
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'verifying' | 'success' | 'declined'>('idle');
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -46,12 +46,36 @@ export const UpgradeModal: React.FC = () => {
       setIsProcessing(false);
       setPaymentStatus('idle');
       setCryptoTxHash('');
-      setActiveTab('payoneer');
+      setActiveTab('payhere');
       setHostedPageOpened(false);
     }
   }, [isUpgradeModalOpen]);
 
   if (!isUpgradeModalOpen) return null;
+
+  // PayHere Checkout Handler
+  const handleOpenPayHereCheckout = () => {
+    if (!user) {
+      closeUpgradeModal();
+      openAuthModal();
+      return;
+    }
+    setPaymentError(null);
+    setIsProcessing(true);
+    try {
+      GlobalPaymentService.submitPayHereCheckout({
+        userEmail: user.email || undefined,
+        userName: user.displayName || undefined,
+        currency: selectedCurrency,
+      });
+      setIsProcessing(false);
+      setHostedPageOpened(true);
+    } catch (err) {
+      console.warn('[PayHere checkout error]:', err);
+      setIsProcessing(false);
+      setPaymentError('Unable to open PayHere checkout. Please try again.');
+    }
+  };
 
   // Dynamic Live Payoneer Checkout Link Handler
   const handleOpenPayoneerHostedPage = async () => {
@@ -286,7 +310,75 @@ export const UpgradeModal: React.FC = () => {
             </div>
           </div>
 
-          {/* TAB 1: PAYONEER CHECKOUT */}
+          {/* TAB 1: PAYHERE CHECKOUT */}
+          {activeTab === 'payhere' && (
+            <div className="space-y-4">
+              {/* PayHere Checkout Card */}
+              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-slate-900 p-5 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
+                    <span className="material-symbols-outlined text-base">payments</span>
+                    PayHere LK Payment Gateway
+                  </div>
+                  <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase ${
+                    GlobalPaymentService.getPayHereConfig().isLive
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-amber-500 text-navy'
+                  }`}>
+                    {GlobalPaymentService.getPayHereConfig().envName}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  Pay securely using any major Credit or Debit Card (Visa, MasterCard, AMEX), eZ Cash, mCash, or Sampath Vishwa.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleOpenPayHereCheckout}
+                  disabled={isProcessing}
+                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <span className={`material-symbols-outlined text-base ${isProcessing ? 'spin' : ''}`}>
+                    {isProcessing ? 'sync' : 'shopping_cart_checkout'}
+                  </span>
+                  {isProcessing ? 'Opening PayHere...' : `Pay ${GlobalPaymentService.formatPrice(selectedCurrency)} with PayHere`}
+                </button>
+
+                {hostedPageOpened && (
+                  <div className="pt-2 border-t border-emerald-200 dark:border-emerald-800/60 animate-fade-in space-y-2">
+                    <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">info</span>
+                      PayHere checkout page opened. Once paid, click below to confirm:
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleConfirmHostedPayment}
+                      disabled={isProcessing}
+                      className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-base">verified</span>
+                      {isProcessing ? 'Verifying Payment...' : 'I Completed Payment — Activate Pro Now'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {!GlobalPaymentService.getPayHereConfig().isLive && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 p-3 rounded-xl text-[11px] text-amber-900 dark:text-amber-300 flex items-start gap-2">
+                  <span className="material-symbols-outlined text-base text-amber-600 mt-0.5">info</span>
+                  <div>
+                    <span className="font-bold">PayHere Account Approval Status:</span>
+                    <p className="mt-0.5 opacity-90">
+                      PayHere Sandbox is active. You can safely perform end-to-end test payments right now using PayHere test cards while your live merchant account approval is pending.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: PAYONEER CHECKOUT */}
           {activeTab === 'payoneer' && (
             <div className="space-y-4">
               

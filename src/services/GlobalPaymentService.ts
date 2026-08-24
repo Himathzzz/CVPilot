@@ -22,7 +22,7 @@ export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
 
 export const PAYONEER_PAYMENT_URL = import.meta.env.VITE_PAYONEER_PAYMENT_LINK || 'https://payoneer.me/cvpilot';
 
-export type PaymentGatewayId = 'payoneer' | 'crypto';
+export type PaymentGatewayId = 'payhere' | 'payoneer' | 'crypto';
 
 export interface PaymentGatewayInfo {
   id: PaymentGatewayId;
@@ -37,8 +37,18 @@ export interface PaymentGatewayInfo {
 
 export const PAYMENT_GATEWAYS: PaymentGatewayInfo[] = [
   {
+    id: 'payhere',
+    name: 'PayHere LK (Credit Cards & Mobile Wallets)',
+    badge: 'Sri Lanka & Global • Direct Payout',
+    description: 'Pay securely using Visa, MasterCard, AMEX, eZ Cash, mCash, or Sampath Vishwa via PayHere LK payment gateway.',
+    icon: 'payments',
+    supportedMethods: ['Visa', 'MasterCard', 'AMEX', 'eZ Cash', 'mCash', 'Sampath Vishwa'],
+    developerPayoutNote: 'Direct Deposit to Sri Lankan Bank Account in LKR/USD',
+    isMerchantOfRecord: false
+  },
+  {
     id: 'payoneer',
-    name: 'Payoneer & Credit Cards',
+    name: 'Payoneer & Cards',
     badge: 'Instant Access • Global Merchant',
     description: 'Pay securely using your Credit/Debit Card (Visa, MasterCard, Amex) or Payoneer Account via Payoneer Checkout.',
     icon: 'credit_card',
@@ -171,6 +181,77 @@ export class GlobalPaymentService {
       qrCodeUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=TYD4xQ9sU83hV1kZ8n3mXwR5L2p4q7vW1y',
       instructions: 'Transfer $5.00 USDT via TRC-20 or Polygon USDC. Enter your transaction hash below to verify and activate Pro instantly.'
     };
+  }
+
+  /**
+   * PayHere Payment Gateway Configuration
+   * Auto-detects Sandbox mode vs Live environment
+   */
+  static getPayHereConfig() {
+    const env = (import.meta.env.VITE_PAYHERE_ENV || 'sandbox').toLowerCase();
+    const isLive = env === 'live' || env === 'production';
+    const merchantId = import.meta.env.VITE_PAYHERE_MERCHANT_ID || '1220000';
+    const actionUrl = isLive
+      ? 'https://www.payhere.lk/pay/checkout'
+      : 'https://sandbox.payhere.lk/pay/checkout';
+
+    return {
+      isLive,
+      envName: isLive ? 'LIVE' : 'SANDBOX (Test Mode)',
+      merchantId,
+      actionUrl,
+    };
+  }
+
+  /**
+   * Generates and submits PayHere checkout form dynamically
+   */
+  static submitPayHereCheckout(params: {
+    userEmail?: string;
+    userName?: string;
+    currency?: CurrencyConfig;
+  }) {
+    const config = this.getPayHereConfig();
+    const curr = params.currency || SUPPORTED_CURRENCIES[0];
+    const amountStr = curr.amount.toFixed(2);
+    const orderId = `CVP_${Date.now()}`;
+    const nameParts = (params.userName || 'Architect User').split(' ');
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = config.actionUrl;
+    form.target = '_blank';
+
+    const fields: Record<string, string> = {
+      merchant_id: config.merchantId,
+      return_url: `${window.location.origin}/?payment=success`,
+      cancel_url: `${window.location.origin}/?payment=cancelled`,
+      notify_url: `${window.location.origin}/api/webhooks`,
+      order_id: orderId,
+      items: 'CV PILOT Pro Membership ($5/mo)',
+      currency: curr.code === 'LKR' ? 'LKR' : 'USD',
+      amount: amountStr,
+      first_name: nameParts[0] || 'User',
+      last_name: nameParts.slice(1).join(' ') || 'Customer',
+      email: params.userEmail || 'user@cvpilot.space',
+      phone: '0770000000',
+      address: 'Main Street',
+      city: 'Colombo',
+      country: 'Sri Lanka',
+      custom_1: params.userEmail || 'guest',
+    };
+
+    Object.entries(fields).forEach(([key, val]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = val;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
   }
 }
 
