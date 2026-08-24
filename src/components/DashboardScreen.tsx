@@ -6,6 +6,7 @@ import type { ResumeTemplateId } from '../types/resume';
 import { TemplateLibraryModal } from './TemplateLibraryModal';
 import { UpgradeModal } from './UpgradeModal';
 import { ThemeToggle } from './ThemeToggle';
+import { SettingsView } from './dashboard/SettingsView';
 
 interface DashboardScreenProps {
   onNavigateToBuilder: (templateId?: ResumeTemplateId) => void;
@@ -16,19 +17,33 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
   const { user, logout } = useAuth();
   const { isProMember, openUpgradeModal } = useMembership();
   const { resumes, createNewResume, selectActiveResume, deleteResume } = useResumes();
-  const [activeTab, setActiveTab] = useState<'resumes' | 'builder' | 'templates' | 'analytics' | 'settings'>('resumes');
+  const getInitialTab = (): 'resumes' | 'builder' | 'templates' | 'settings' => {
+    const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+    if (path === '/settings') return 'settings';
+    return 'resumes';
+  };
+
+  const [activeTab, setActiveTab] = useState<'resumes' | 'builder' | 'templates' | 'settings'>(getInitialTab);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState<boolean>(false);
 
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
 
-  const handleTabClick = (tab: 'resumes' | 'builder' | 'templates' | 'analytics' | 'settings') => {
+  const handleTabClick = (tab: 'resumes' | 'builder' | 'templates' | 'settings') => {
     setActiveTab(tab);
     setIsMobileMenuOpen(false);
     if (tab === 'builder') {
       onNavigateToBuilder();
     } else if (tab === 'templates') {
       setIsLibraryOpen(true);
+    } else if (tab === 'settings') {
+      if (window.location.pathname !== '/settings') {
+        window.history.pushState({}, '', '/settings');
+      }
+    } else if (tab === 'resumes') {
+      if (window.location.pathname !== '/dashboard') {
+        window.history.pushState({}, '', '/dashboard');
+      }
     }
   };
 
@@ -92,15 +107,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
             <span className="material-symbols-outlined text-[20px]">dashboard_customize</span>
             Templates
           </button>
-          <button 
-            onClick={() => handleTabClick('analytics')}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all text-left text-sm ${
-              activeTab === 'analytics' ? 'bg-navy dark:bg-gold text-white dark:text-navy font-bold shadow-xs' : 'text-navy dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 hover:text-gold'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[20px]">bar_chart</span>
-            Analytics
-          </button>
+
           <button 
             onClick={() => handleTabClick('settings')}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-all text-left text-sm ${
@@ -194,7 +201,11 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
         </header>
 
         <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-xl">
-          {/* Welcome & Primary Action */}
+          {activeTab === 'settings' ? (
+            <SettingsView />
+          ) : (
+            <>
+              {/* Welcome & Primary Action */}
           <section className="flex flex-col md:flex-row justify-between items-start md:items-end mb-xl gap-md">
             <div>
               <h1 className="font-display text-h1-mobile md:text-h1 font-bold text-navy dark:text-white mb-2">
@@ -425,6 +436,8 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </div>
             </div>
           </section>
+            </>
+          )}
         </div>
 
         {/* Footer */}

@@ -38,7 +38,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
     setSubmitError(null);
 
     try {
-      const response = await fetch('https://formsubmit.co/ajax/cvpilot.space@gmail.com', {
+      const response = await fetch('https://formsubmit.co/ajax/cvpilot.site.je@gmail.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,8 +64,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({
       }
     } catch (err: any) {
       console.warn('FormSubmit endpoint error or blocked, triggering fallback:', err);
-      // Fallback: Open native mail client addressed to cvpilot.space@gmail.com
-      const mailtoUrl = `mailto:cvpilot.space@gmail.com?subject=${encodeURIComponent(
+      // Fallback: Open native mail client addressed to cvpilot.site.je@gmail.com
+      const mailtoUrl = `mailto:cvpilot.site.je@gmail.com?subject=${encodeURIComponent(
         `[CV PILOT] ${formData.subject} - ${formData.name}`
       )}&body=${encodeURIComponent(
         `Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`
@@ -158,7 +158,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                   Support Email
                 </h3>
                 <p className="text-sm font-extrabold text-slate-900 dark:text-white font-mono break-all">
-                  cvpilot.space@gmail.com
+                  cvpilot.site.je@gmail.com
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   For account help, billing, & general inquiries.
@@ -166,13 +166,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               </div>
               <div className="mt-6 flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <a 
-                  href="mailto:cvpilot.space@gmail.com"
+                  href="mailto:cvpilot.site.je@gmail.com"
                   className="flex-1 text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors"
                 >
                   Send Email
                 </a>
                 <button
-                  onClick={() => handleCopy('cvpilot.space@gmail.com', 'support_email')}
+                  onClick={() => handleCopy('cvpilot.site.je@gmail.com', 'support_email')}
                   className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
                   title="Copy Support Email"
                 >
@@ -282,7 +282,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     Message Sent to Support!
                   </h3>
                   <p className="text-xs text-emerald-800 dark:text-emerald-300 max-w-md mx-auto">
-                    Your details and message have been sent to <strong className="font-mono text-emerald-900 dark:text-emerald-100">cvpilot.space@gmail.com</strong>. Our support team will reply to your email address shortly.
+                    Your details and message have been sent to <strong className="font-mono text-emerald-900 dark:text-emerald-100">cvpilot.site.je@gmail.com</strong>. Our support team will reply to your email address shortly.
                   </p>
                   <button
                     onClick={() => setFormSubmitted(false)}
@@ -364,7 +364,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
                     {isSubmitting ? (
                       <>
                         <span className="material-symbols-outlined text-lg animate-spin">sync</span>
-                        Sending to cvpilot.space@gmail.com...
+                        Sending to cvpilot.site.je@gmail.com...
                       </>
                     ) : (
                       <>

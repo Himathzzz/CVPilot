@@ -65,7 +65,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
               <p>You can cancel your Pro Membership ($5.00/month) at any time through your account settings or by contacting support. Upon cancellation, your subscription will remain active until the end of your current billing period.</p>
               
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">2. Refund Eligibility</h4>
-              <p>We offer a 7-day money-back guarantee if you are dissatisfied with Pro services. Contact support at cvpilot.space@gmail.com for assistance.</p>
+              <p>We offer a 7-day money-back guarantee if you are dissatisfied with Pro services. Contact support at cvpilot.site.je@gmail.com for assistance.</p>
             </>
           )}
 

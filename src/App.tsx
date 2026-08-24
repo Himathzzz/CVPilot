@@ -31,7 +31,7 @@ const getPathView = (pathname: string): ViewMode => {
   if (cleanPath === '/privacy' || cleanPath === '/privacy-policy') return 'privacy';
   if (cleanPath === '/refunds' || cleanPath === '/refund-policy' || cleanPath === '/refund' || cleanPath === '/return-policy' || cleanPath === '/returns') return 'refunds';
   if (cleanPath === '/contact' || cleanPath === '/contact-us' || cleanPath === '/support') return 'contact';
-  if (cleanPath === '/dashboard') return 'dashboard';
+  if (cleanPath === '/dashboard' || cleanPath === '/settings') return 'dashboard';
   if (cleanPath === '/builder') return 'builder';
   return 'home';
 };

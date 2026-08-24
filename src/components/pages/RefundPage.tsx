@@ -104,7 +104,7 @@ export const RefundPage: React.FC<RefundPageProps> = ({
                 <p>To request a refund under our 7-day policy:</p>
                 <div className="bg-blue-50 dark:bg-blue-950/40 p-5 rounded-xl border border-blue-200 dark:border-blue-800 space-y-3 text-xs text-blue-950 dark:text-blue-200">
                   <p><strong>Option A: Direct Support Email (Recommended)</strong></p>
-                  <p>Send an email to <a href="mailto:cvpilot.space@gmail.com" className="font-bold underline text-blue-600 dark:text-blue-400">cvpilot.space@gmail.com</a> with your account email address and order number. Our team responds within 24 hours to process your refund.</p>
+                  <p>Send an email to <a href="mailto:cvpilot.site.je@gmail.com" className="font-bold underline text-blue-600 dark:text-blue-400">cvpilot.site.je@gmail.com</a> with your account email address and order number. Our team responds within 24 hours to process your refund.</p>
                   <hr className="border-blue-200 dark:border-blue-800" />
                   <p><strong>Option B: Paddle Buyer Support</strong></p>
                   <p>Visit Paddle Buyer Support at <a href="https://paddle.net" target="_blank" rel="noopener noreferrer" className="font-bold underline text-blue-600 dark:text-blue-400">https://paddle.net</a> or use the receipt link in your email to contact Paddle directly.</p>
@@ -118,7 +118,7 @@ export const RefundPage: React.FC<RefundPageProps> = ({
                 </p>
                 <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-800 dark:text-slate-200">
                   CV PILOT Support Team<br />
-                  Email: <a href="mailto:cvpilot.space@gmail.com" className="text-blue-600 dark:text-blue-400 underline">cvpilot.space@gmail.com</a><br />
+                  Email: <a href="mailto:cvpilot.site.je@gmail.com" className="text-blue-600 dark:text-blue-400 underline">cvpilot.site.je@gmail.com</a><br />
                   Website: <a href="https://cvpilot.space" className="text-blue-600 dark:text-blue-400 underline">https://cvpilot.space</a>
                 </div>
               </section>

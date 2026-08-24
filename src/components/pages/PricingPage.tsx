@@ -207,7 +207,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">What is your refund policy?</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  We offer a full 7-day money-back guarantee. If you are not completely satisfied, contact support at <a href="mailto:cvpilot.space@gmail.com" className="text-blue-600 underline">cvpilot.space@gmail.com</a> within 7 days for a hassle-free refund.
+                  We offer a full 7-day money-back guarantee. If you are not completely satisfied, contact support at <a href="mailto:cvpilot.site.je@gmail.com" className="text-blue-600 underline">cvpilot.site.je@gmail.com</a> within 7 days for a hassle-free refund.
                 </p>
               </div>
 

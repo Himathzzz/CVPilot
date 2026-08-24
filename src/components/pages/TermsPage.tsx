@@ -125,7 +125,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({
                 </p>
                 <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-800 dark:text-slate-200">
                   CV PILOT Legal Team<br />
-                  Email: <a href="mailto:cvpilot.space@gmail.com" className="text-blue-600 dark:text-blue-400 underline">cvpilot.space@gmail.com</a><br />
+                  Email: <a href="mailto:cvpilot.site.je@gmail.com" className="text-blue-600 dark:text-blue-400 underline">cvpilot.site.je@gmail.com</a><br />
                   Website: <a href="https://cvpilot.space" className="text-blue-600 dark:text-blue-400 underline">https://cvpilot.space</a>
                 </div>
               </section>
