@@ -20,9 +20,10 @@ import { TermsPage } from './components/pages/TermsPage';
 import { PrivacyPage } from './components/pages/PrivacyPage';
 import { RefundPage } from './components/pages/RefundPage';
 import { ContactPage } from './components/pages/ContactPage';
+import { AIChatResumeBuilder } from './components/AIChatResumeBuilder';
 import type { ResumeTemplateId } from './types/resume';
 
-type ViewMode = 'home' | 'dashboard' | 'builder' | 'pricing' | 'terms' | 'privacy' | 'refunds' | 'contact';
+type ViewMode = 'home' | 'dashboard' | 'builder' | 'chat' | 'pricing' | 'terms' | 'privacy' | 'refunds' | 'contact';
 
 const getPathView = (pathname: string): ViewMode => {
   const cleanPath = pathname.toLowerCase().replace(/\/$/, '');
@@ -33,6 +34,7 @@ const getPathView = (pathname: string): ViewMode => {
   if (cleanPath === '/contact' || cleanPath === '/contact-us' || cleanPath === '/support') return 'contact';
   if (cleanPath === '/dashboard' || cleanPath === '/settings') return 'dashboard';
   if (cleanPath === '/builder') return 'builder';
+  if (cleanPath === '/chat' || cleanPath === '/ai-chat' || cleanPath === '/ai') return 'chat';
   return 'home';
 };
 
@@ -59,7 +61,7 @@ const MainContent: React.FC = () => {
 
   // Reset protected views to home if user logs out
   useEffect(() => {
-    if (!user && (currentView === 'dashboard' || currentView === 'builder')) {
+    if (!user && (currentView === 'dashboard' || currentView === 'builder' || currentView === 'chat')) {
       navigateTo('home', '/');
     }
   }, [user, currentView]);
@@ -77,6 +79,14 @@ const MainContent: React.FC = () => {
   const handleBuildResumeClick = () => {
     if (user) {
       navigateTo('builder', '/builder');
+    } else {
+      openAuthModal();
+    }
+  };
+
+  const handleAIChatClick = () => {
+    if (user) {
+      navigateTo('chat', '/chat');
     } else {
       openAuthModal();
     }
@@ -107,6 +117,19 @@ const MainContent: React.FC = () => {
     navigateTo(view, path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (currentView === 'chat' && user) {
+    return (
+      <>
+        <AIChatResumeBuilder
+          onBackToHome={() => navigateTo('dashboard', '/dashboard')}
+          onNavigateToBuilder={handleNavigateToBuilder}
+        />
+        <AuthModal />
+        <UpgradeModal />
+      </>
+    );
+  }
 
   if (currentView === 'pricing') {
     return (
@@ -185,6 +208,7 @@ const MainContent: React.FC = () => {
         <DashboardScreen 
           onNavigateToBuilder={handleNavigateToBuilder}
           onNavigateToHome={handleNavigateToHome}
+          onNavigateToAIChat={handleAIChatClick}
         />
         <AuthModal />
         <UpgradeModal />
@@ -198,6 +222,7 @@ const MainContent: React.FC = () => {
         <ResumeBuilderPlaceholder 
           initialTemplate={selectedTemplate}
           onBackToHome={() => navigateTo('dashboard', '/dashboard')} 
+          onNavigateToAIChat={handleAIChatClick}
         />
         <AuthModal />
         <UpgradeModal />
@@ -210,11 +235,15 @@ const MainContent: React.FC = () => {
       <Navbar 
         onDashboardClick={handleDashboardClick}
         onBuildResumeClick={handleBuildResumeClick}
+        onAIChatClick={handleAIChatClick}
         onHomeClick={handleNavigateToHome}
         onPricingClick={() => navigateTo('pricing', '/pricing')}
       />
       <main className="w-full flex-grow">
-        <HeroSection onBuildResumeClick={handleBuildResumeClick} />
+        <HeroSection 
+          onBuildResumeClick={handleBuildResumeClick} 
+          onAIChatClick={handleAIChatClick}
+        />
         <AIFeaturesSection />
         <TemplateShowcaseSection onSelectTemplate={handleSelectTemplateFromGallery} />
         <div id="process">

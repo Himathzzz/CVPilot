@@ -11,9 +11,10 @@ import { SettingsView } from './dashboard/SettingsView';
 interface DashboardScreenProps {
   onNavigateToBuilder: (templateId?: ResumeTemplateId) => void;
   onNavigateToHome: () => void;
+  onNavigateToAIChat?: () => void;
 }
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBuilder, onNavigateToHome }) => {
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBuilder, onNavigateToHome, onNavigateToAIChat }) => {
   const { user, logout } = useAuth();
   const { isProMember, openUpgradeModal } = useMembership();
   const { resumes, createNewResume, selectActiveResume, deleteResume } = useResumes();
@@ -44,6 +45,16 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
       if (window.location.pathname !== '/dashboard') {
         window.history.pushState({}, '', '/dashboard');
       }
+    }
+  };
+
+  const handleOpenAIChat = () => {
+    setIsMobileMenuOpen(false);
+    if (onNavigateToAIChat) {
+      onNavigateToAIChat();
+    } else {
+      window.history.pushState({}, '', '/chat');
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
   };
 
@@ -88,6 +99,18 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
           >
             <span className="material-symbols-outlined text-[20px]">description</span>
             My Resumes
+          </button>
+          <button 
+            onClick={handleOpenAIChat}
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg font-medium transition-all text-left text-sm text-navy dark:text-slate-200 hover:bg-surface-container-low dark:hover:bg-slate-800 hover:text-gold group border border-gold/30 bg-gold/5"
+          >
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[20px] text-gold animate-pulse">smart_toy</span>
+              <span className="font-bold">AI Chat Builder</span>
+            </div>
+            <span className="text-[9px] font-extrabold bg-gold text-navy px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+              NEW
+            </span>
           </button>
           <button 
             onClick={() => handleTabClick('builder')}
@@ -206,7 +229,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
           ) : (
             <>
               {/* Welcome & Primary Action */}
-          <section className="flex flex-col md:flex-row justify-between items-start md:items-end mb-xl gap-md">
+          <section className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-md">
             <div>
               <h1 className="font-display text-h1-mobile md:text-h1 font-bold text-navy dark:text-white mb-2">
                 Welcome back, <span className="text-gold">{displayName}</span>.
@@ -215,15 +238,47 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                 Manage your active resumes and explore new templates to refine your professional narrative.
               </p>
             </div>
-            <button 
-              onClick={() => {
-                const createdId = createNewResume();
-                if (createdId) onNavigateToBuilder();
-              }}
-              className="bg-navy dark:bg-gold hover:bg-[#242f45] dark:hover:bg-[#8e6f3d] text-white dark:text-navy font-bold font-label-caps text-label-caps px-6 py-3.5 rounded hover:shadow-md transition-all flex items-center gap-2 whitespace-nowrap shrink-0 border border-navy dark:border-gold"
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <button 
+                onClick={handleOpenAIChat}
+                className="bg-gold hover:bg-amber-400 text-navy font-bold font-label-caps text-xs uppercase px-5 py-3 rounded-xl hover:shadow-lg transition-all flex items-center gap-2 border border-gold/40 shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">smart_toy</span>
+                CHAT WITH AI BUILDER
+              </button>
+              <button 
+                onClick={() => {
+                  const createdId = createNewResume();
+                  if (createdId) onNavigateToBuilder();
+                }}
+                className="bg-navy dark:bg-slate-800 hover:bg-[#242f45] text-white font-bold font-label-caps text-xs uppercase px-5 py-3 rounded-xl hover:shadow-md transition-all flex items-center gap-2 border border-slate-700"
+              >
+                <span className="material-symbols-outlined text-[18px] text-gold">add</span>
+                CREATE BLANK
+              </button>
+            </div>
+          </section>
+
+          {/* AI Chat Spotlight Banner */}
+          <section className="mb-xl p-5 md:p-6 bg-gradient-to-r from-navy via-slate-900 to-indigo-950 text-white rounded-2xl border border-gold/30 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="relative z-10 max-w-xl space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/40 text-[11px] font-bold uppercase tracking-wider">
+                <span className="material-symbols-outlined text-xs">auto_awesome</span>
+                ChatGPT-Style Conversational Builder
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold font-display tracking-tight text-white">
+                Build a Complete CV Just by Chatting
+              </h2>
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
+                Paste your rough notes, LinkedIn bio, or tell the AI about your work history. Watch a high-impact, ATS-friendly resume synthesize in real-time.
+              </p>
+            </div>
+            <button
+              onClick={handleOpenAIChat}
+              className="relative z-10 bg-gold hover:bg-amber-400 text-navy font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg shadow-gold/20 flex items-center gap-2 transition-all shrink-0 hover:scale-105"
             >
-              <span className="material-symbols-outlined text-[18px] text-gold dark:text-navy">add</span>
-              CREATE NEW RESUME
+              <span className="material-symbols-outlined text-base">forum</span>
+              Launch AI Chat Copilot
             </button>
           </section>
 

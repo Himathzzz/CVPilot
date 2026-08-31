@@ -88,6 +88,32 @@ export const suggestSkillsForRole = (jobTitle: string): SkillCategory[] => {
   ];
 };
 
+export const getEmptyResumeData = (): ResumeData => {
+  return {
+    title: 'New Resume',
+    templateId: 'modern-minimal',
+    themeColor: 'gold',
+    personalInfo: {
+      fullName: '',
+      jobTitle: '',
+      email: '',
+      phone: '',
+      location: '',
+      website: '',
+      linkedin: '',
+      github: '',
+      summary: '',
+      photoUrl: '',
+      showPhoto: false,
+    },
+    experiences: [],
+    education: [],
+    skillCategories: [],
+    projects: [],
+    certifications: []
+  };
+};
+
 export const getInitialResumeData = (userDisplayName?: string, userEmail?: string): ResumeData => {
   return {
     title: 'Professional CV',

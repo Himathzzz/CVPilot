@@ -7,11 +7,19 @@ interface NavbarProps {
   onDashboardClick: () => void;
   onBuildResumeClick: () => void;
   onHomeClick: () => void;
+  onAIChatClick?: () => void;
   onPricingClick?: () => void;
   onContactClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onDashboardClick, onBuildResumeClick, onHomeClick, onPricingClick, onContactClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onDashboardClick, 
+  onBuildResumeClick, 
+  onHomeClick, 
+  onAIChatClick, 
+  onPricingClick, 
+  onContactClick 
+}) => {
   const { user, openAuthModal, logout } = useAuth();
   const { isProMember, downgradeToFree, openUpgradeModal } = useMembership();
   const [showUserDropdown, setShowUserDropdown] = React.useState(false);
@@ -30,6 +38,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onDashboardClick, onBuildResumeC
     setIsMobileMenuOpen(false);
     if (user) {
       onDashboardClick();
+    } else {
+      openAuthModal();
+    }
+  };
+
+  const handleAIChatNav = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    if (user) {
+      if (onAIChatClick) onAIChatClick();
+      else {
+        window.history.pushState({}, '', '/chat');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     } else {
       openAuthModal();
     }
@@ -99,6 +121,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onDashboardClick, onBuildResumeC
             Dashboard
           </a>
           <a 
+            onClick={handleAIChatNav}
+            className="text-navy dark:text-slate-200 hover:text-gold dark:hover:text-gold transition-colors cursor-pointer flex items-center gap-1.5" 
+            href="/chat"
+          >
+            <span className="material-symbols-outlined text-[18px] text-gold animate-pulse">smart_toy</span>
+            AI Chat Builder
+            <span className="text-[9px] bg-gold/20 text-gold font-extrabold px-1.5 py-0.2 rounded uppercase">
+              AI
+            </span>
+          </a>
+          <a 
             onClick={() => setIsMobileMenuOpen(false)}
             className="text-navy dark:text-slate-200 hover:text-gold dark:hover:text-gold transition-colors" 
             href="#templates"
@@ -163,6 +196,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onDashboardClick, onBuildResumeC
                     className="text-left py-xs text-xs font-label-caps uppercase text-navy dark:text-slate-200 font-medium hover:text-gold transition-colors mt-xs"
                   >
                     Dashboard
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      setShowUserDropdown(false);
+                      handleAIChatNav(e);
+                    }}
+                    className="text-left py-xs text-xs font-label-caps uppercase text-gold font-bold hover:underline transition-colors flex items-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">smart_toy</span>
+                    AI Chat Builder
                   </button>
                   <button
                     onClick={() => {
@@ -239,6 +282,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onDashboardClick, onBuildResumeC
             href="#dashboard"
           >
             Dashboard
+          </a>
+          <a 
+            onClick={handleAIChatNav}
+            className="text-gold font-bold text-base py-1 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2" 
+            href="/chat"
+          >
+            <span className="material-symbols-outlined text-lg">smart_toy</span>
+            AI Chat Builder (ChatGPT)
           </a>
           <a 
             onClick={() => setIsMobileMenuOpen(false)}

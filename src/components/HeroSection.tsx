@@ -3,14 +3,27 @@ import { useAuth } from '../context/AuthContext';
 
 interface HeroSectionProps {
   onBuildResumeClick: () => void;
+  onAIChatClick?: () => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onBuildResumeClick }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onBuildResumeClick, onAIChatClick }) => {
   const { user, openAuthModal } = useAuth();
 
   const handleBuildClick = () => {
     if (user) {
       onBuildResumeClick();
+    } else {
+      openAuthModal();
+    }
+  };
+
+  const handleAIChatClick = () => {
+    if (user) {
+      if (onAIChatClick) onAIChatClick();
+      else {
+        window.history.pushState({}, '', '/chat');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
     } else {
       openAuthModal();
     }
@@ -25,30 +38,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBuildResumeClick }) 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column Text & CTAs */}
         <div className="lg:col-span-7 space-y-6 text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/20 text-gold border border-gold/40 text-xs font-bold uppercase tracking-wider">
+            <span className="material-symbols-outlined text-sm">smart_toy</span>
+            AI-Powered ChatGPT Resume Copilot
+          </div>
+
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.1]">
             Create Your Professional Resume <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-500">in Minutes</span>
           </h1>
 
           <p className="text-slate-600 dark:text-slate-300 text-lg md:text-xl font-normal leading-relaxed max-w-2xl">
-            Resumaker-inspired AI builder that formats your experience, suggests high-impact bullet points, and guarantees 100% ATS parser compatibility.
+            Chat conversationally like ChatGPT to build, structure, and refine a high-impact, ATS-optimized CV in real-time.
           </p>
 
           {/* Call to Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+            <button 
+              onClick={handleAIChatClick}
+              className="px-7 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-gold hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg shadow-gold/25 hover:shadow-xl hover:shadow-gold/35 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined font-bold">forum</span>
+              Chat with AI to Build CV
+            </button>
             <button 
               onClick={handleBuildClick}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm uppercase tracking-wider shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"
+              className="px-7 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm uppercase tracking-wider shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined">bolt</span>
-              Create My Resume Now
+              Blank Builder
             </button>
-            <a 
-              href="#templates"
-              className="px-8 py-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold text-sm uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-center shadow-xs flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined">grid_view</span>
-              View Templates
-            </a>
           </div>
 
           {/* Quick Metrics Checklist */}

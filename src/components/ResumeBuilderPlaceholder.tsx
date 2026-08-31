@@ -5,21 +5,27 @@ import { useResumes } from '../context/ResumeContext';
 import type { ResumeData, ResumeTemplateId, ExperienceItem, SkillCategory, EducationItem } from '../types/resume';
 import { TemplateEngine } from '../engine/TemplateEngine';
 import { TemplateCustomizer } from './TemplateCustomizer';
-import { generateAISummary, enhanceBulletPoint, suggestSkillsForRole, getInitialResumeData } from '../utils/aiGenerator';
+import { generateAISummary, enhanceBulletPoint, suggestSkillsForRole, getInitialResumeData, getEmptyResumeData } from '../utils/aiGenerator';
 import { TemplateLibraryModal } from './TemplateLibraryModal';
 import { UpgradeModal } from './UpgradeModal';
 import { ThemeToggle } from './ThemeToggle';
+import { AIChatDrawer } from './AIChatDrawer';
 import { getTemplateConfigById } from '../data/templatePacks';
 import type { TemplateConfig } from '../types/templateEngine';
 
 interface ResumeBuilderProps {
   onBackToHome: () => void;
   initialTemplate?: ResumeTemplateId;
+  onNavigateToAIChat?: () => void;
 }
 
 type StepTab = 'all' | 'heading' | 'experience' | 'education' | 'skills' | 'summary' | 'finalize';
 
-export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackToHome, initialTemplate = 'modern-minimal' }) => {
+export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ 
+  onBackToHome, 
+  initialTemplate = 'modern-minimal', 
+  onNavigateToAIChat: _onNavigateToAIChat 
+}) => {
   const { user } = useAuth();
   const { isProMember, openUpgradeModal } = useMembership();
   const { activeResume, updateActiveResume } = useResumes();
@@ -27,13 +33,25 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
   
   const [isLibraryOpen, setIsLibraryOpen] = useState<boolean>(false);
   const [isCustomizerOpen, setIsCustomizerOpen] = useState<boolean>(false);
+  const [isAIChatDrawerOpen, setIsAIChatDrawerOpen] = useState<boolean>(false);
   const [zoomScale, setZoomScale] = useState<number>(1.0);
   const [activeStepTab, setActiveStepTab] = useState<StepTab>('heading');
 
-  // Resume Data State
+  // Resume Data State (Restores draft on browser refresh)
   const [resumeData, setResumeData] = useState<ResumeData>(() => {
     if (activeResume?.data) {
       return activeResume.data;
+    }
+    const savedDraft = localStorage.getItem('cvpilot_builder_draft_resume');
+    if (savedDraft) {
+      try {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && typeof parsed === 'object' && parsed.personalInfo) {
+          return parsed;
+        }
+      } catch (_e) {
+        // fallback
+      }
     }
     const initial = getInitialResumeData(user?.displayName || undefined, user?.email || undefined);
     if (initialTemplate) {
@@ -50,9 +68,10 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
     return getTemplateConfigById(initialTemplate || 'modern-minimal');
   });
 
-  // Automatically save changes
+  // Automatically save changes to context and localStorage draft
   React.useEffect(() => {
     updateActiveResume(resumeData, currentConfig);
+    localStorage.setItem('cvpilot_builder_draft_resume', JSON.stringify(resumeData));
   }, [resumeData, currentConfig]);
 
   React.useEffect(() => {
@@ -248,6 +267,19 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
     showNotification(`Selected ${config.name} template!`);
   };
 
+  const handleClearAll = () => {
+    if (window.confirm('Clear all fields and start with a blank CV?')) {
+      localStorage.removeItem('cvpilot_builder_draft_resume');
+      setResumeData(getEmptyResumeData());
+      showNotification('CV fields cleared to start fresh!');
+    }
+  };
+
+  const handleLoadSample = () => {
+    setResumeData(getInitialResumeData());
+    showNotification('Sample template data loaded!');
+  };
+
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveCV = () => {
@@ -298,6 +330,17 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAIChatDrawerOpen(true)}
+            className="bg-gradient-to-r from-navy to-slate-900 dark:from-slate-800 dark:to-indigo-950 text-gold border border-gold/40 hover:border-gold font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm text-gold animate-pulse">smart_toy</span>
+            <span>AI Copilot</span>
+            <span className="bg-gold text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
+              LIVE
+            </span>
+          </button>
+
           <ThemeToggle />
 
           <button
@@ -314,6 +357,24 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
           >
             <span className="material-symbols-outlined text-sm text-amber-500">palette</span>
             Design
+          </button>
+
+          <button
+            onClick={handleClearAll}
+            className="bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-bold text-xs px-2.5 py-2 rounded-xl flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700"
+            title="Clear all fields to start fresh"
+          >
+            <span className="material-symbols-outlined text-sm text-red-500">delete_sweep</span>
+            <span className="hidden md:inline">Clear</span>
+          </button>
+
+          <button
+            onClick={handleLoadSample}
+            className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs px-2.5 py-2 rounded-xl flex items-center gap-1 transition-colors border border-slate-200 dark:border-slate-700"
+            title="Load sample example CV"
+          >
+            <span className="material-symbols-outlined text-sm text-blue-500">content_paste</span>
+            <span className="hidden md:inline">Sample</span>
           </button>
 
           <button
@@ -913,6 +974,20 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({ onBackT
         onClose={() => setIsCustomizerOpen(false)}
         config={currentConfig}
         onChangeConfig={setCurrentConfig}
+      />
+
+      {/* AI Copilot Drawer */}
+      <AIChatDrawer
+        isOpen={isAIChatDrawerOpen}
+        onClose={() => setIsAIChatDrawerOpen(false)}
+        resumeData={resumeData}
+        onUpdateResumeData={(updated) => {
+          setResumeData(updated);
+          if (updated.templateId && updated.templateId !== currentConfig.id) {
+            setCurrentConfig(getTemplateConfigById(updated.templateId));
+          }
+          showNotification('✨ AI Copilot updated your CV fields!');
+        }}
       />
 
       <UpgradeModal />
