@@ -202,7 +202,7 @@ export async function generateResumeWithGemini(
         return sanitizeGeminiOutput(parsed, currentResume);
       }
     }
-  } catch (_err) {
+  } catch {
     // /api/ai-chat not available in current environment (e.g. pure Vite dev server), proceed to direct API
   }
 
@@ -261,7 +261,7 @@ Please synthesize, update, and return the complete updated resume and review bas
     try {
       const errObj = JSON.parse(errorText);
       parsedMsg = errObj.error?.message || errorText;
-    } catch (_e) {
+    } catch {
       // Keep errorText
     }
     throw new Error(`Gemini API error (${response.status}): ${parsedMsg}`);

@@ -68,7 +68,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             // Filter out legacy default sample resumes (res_1, res_2)
             loadedResumes = parsed.filter(r => r.id !== 'res_1' && r.id !== 'res_2');
           }
-        } catch (_e) {
+        } catch {
           loadedResumes = [];
         }
       }
@@ -105,7 +105,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return () => {
       isMounted = false;
     };
-  }, [user?.uid]);
+  }, [user, storageKey]);
 
   // Save resume to Firestore Cloud & localStorage
   const saveResumeToCloud = async (resume: SavedUserResume) => {

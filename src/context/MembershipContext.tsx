@@ -27,7 +27,7 @@ export const MembershipProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const savedPro = localStorage.getItem(`cvpilot_pro_membership_${parsed.uid}`);
           if (savedPro !== null) return savedPro === 'true';
         }
-      } catch (_e) {
+      } catch {
         // Fallback
       }
     }
@@ -81,7 +81,7 @@ export const MembershipProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => {
       isMounted = false;
     };
-  }, [user?.uid, authLoading, storageKey]);
+  }, [user, authLoading, storageKey]);
 
   const upgradeToPro = async () => {
     setIsProMember(true);

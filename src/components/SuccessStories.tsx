@@ -25,7 +25,7 @@ export const SuccessStories: React.FC = () => {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) return parsed;
       }
-    } catch (_e) {
+    } catch {
       // Fallback
     }
     return [];
@@ -45,8 +45,8 @@ export const SuccessStories: React.FC = () => {
 
   // Sync user display name if user logs in later
   useEffect(() => {
-    if (user?.displayName && !formName) {
-      setFormName(user.displayName);
+    if (user?.displayName) {
+      setFormName(prev => prev || user.displayName || '');
     }
   }, [user]);
 

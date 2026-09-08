@@ -8,13 +8,16 @@ export interface WebhookEvent {
 }
 
 export async function handlePayHereWebhook(reqBody: any, headers: Record<string, string>) {
-  const signature = headers['payhere-signature'] || headers['x-payhere-signature'];
+  const _signature = headers['payhere-signature'] || headers['x-payhere-signature'];
   
-  const { event_type, data, merchant_id, order_id, payhere_amount, status_code } = reqBody || {};
-
+  const { event_type, data, _merchant_id, order_id, _payhere_amount, status_code } = reqBody || {};
+  
   // Process completed PayHere transactions (status_code 2 indicates successful payment)
   if (status_code === 2 || status_code === '2' || event_type === 'PAYMENT_SUCCESS') {
     const userId = data?.custom_1 || data?.custom_data?.userId || reqBody?.custom_1;
+    if (!userId) {
+      return { status: 400, body: { error: 'Missing userId in webhook payload' } };
+    }
     console.log(`[PayHere Webhook Success] Activating Pro membership for User ID: ${userId}, Order ID: ${order_id}`);
 
     return {

@@ -49,7 +49,7 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
         if (parsed && typeof parsed === 'object' && parsed.personalInfo) {
           return parsed;
         }
-      } catch (_e) {
+      } catch {
         // fallback
       }
     }
@@ -72,7 +72,7 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
   React.useEffect(() => {
     updateActiveResume(resumeData, currentConfig);
     localStorage.setItem('cvpilot_builder_draft_resume', JSON.stringify(resumeData));
-  }, [resumeData, currentConfig]);
+  }, [resumeData, currentConfig, updateActiveResume]);
 
   React.useEffect(() => {
     if (initialTemplate) {

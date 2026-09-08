@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserSession | null>(() => {
     const saved = localStorage.getItem('cvpilot_user_session');
     if (saved) {
-      try { return JSON.parse(saved); } catch (_e) { return null; }
+      try { return JSON.parse(saved); } catch { return null; }
     }
     return null;
   });
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await signOut(auth);
-    } catch (e) {
+    } catch {
       // Ignore errors in offline / demo mode
     }
     setUserSession(null);

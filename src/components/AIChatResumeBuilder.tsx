@@ -62,7 +62,7 @@ export const AIChatResumeBuilder: React.FC<AIChatResumeBuilderProps> = ({
         if (parsed && typeof parsed === 'object' && parsed.personalInfo) {
           return parsed;
         }
-      } catch (_e) {
+      } catch {
         // fallback
       }
     }
@@ -92,7 +92,7 @@ export const AIChatResumeBuilder: React.FC<AIChatResumeBuilderProps> = ({
             timestamp: new Date(m.timestamp)
           }));
         }
-      } catch (_e) {
+      } catch {
         // fallback
       }
     }

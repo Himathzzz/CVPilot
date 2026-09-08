@@ -3,8 +3,8 @@
  * Provides server-side access token generation, order creation, order capture, and webhook verification.
  */
 
-const PAYPAL_CLIENT_ID = process.env.VITE_PAYPAL_CLIENT_ID || 'BAAU4HikA7qSgT7EQf02eraLRik_eEL4w_1NnWf6FS91nYJ3fECB1YAoh367qD5gWhBHutZuTOXK0naFDg';
-const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || 'EO6wAcHLPjNPGTCTDwSw23ViPgEn21r2v0RzVLI-VTPLC';
+const PAYPAL_CLIENT_ID = process.env.VITE_PAYPAL_CLIENT_ID || '';
+const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
 
 // Base URL: use sandbox if explicitly set, else live
 const PAYPAL_BASE_URL = process.env.PAYPAL_ENV === 'sandbox' 
@@ -15,6 +15,10 @@ const PAYPAL_BASE_URL = process.env.PAYPAL_ENV === 'sandbox'
  * Fetch OAuth 2.0 Access Token from PayPal REST API
  */
 export async function getPayPalAccessToken(): Promise<string> {
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+    throw new Error('PayPal credentials missing: Ensure VITE_PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET are configured.');
+  }
+
   const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
   
   const response = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
