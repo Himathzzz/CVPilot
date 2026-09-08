@@ -155,7 +155,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
             </div>
             <div className="overflow-hidden">
               <p className="font-sans text-xs font-semibold text-navy dark:text-white leading-tight truncate">
-                {isProMember ? 'PRO Member ($5/mo)' : 'Basic Free Plan'}
+                {isProMember ? 'PRO Member (LKR 2,000/mo)' : 'Basic Free Plan'}
               </p>
               <p className="font-caption text-caption text-gold font-medium truncate">
                 {isProMember ? 'Unlimited CVs • 100 Templates' : `${resumes.length} / 1 CV Created`}
@@ -168,7 +168,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               className="w-full bg-gold hover:bg-[#8e6f3d] text-navy font-bold font-label-caps text-xs uppercase py-2.5 rounded flex items-center justify-center gap-2 transition-colors shadow-xs"
             >
               <span className="material-symbols-outlined text-base">workspace_premium</span>
-              Upgrade to Pro ($5/mo)
+              Upgrade to Pro (LKR 2,000/mo)
             </button>
           ) : (
             <div className="w-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold text-[11px] uppercase py-2 rounded text-center border border-emerald-300 dark:border-emerald-800">

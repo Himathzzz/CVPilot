@@ -63,12 +63,10 @@ I'm here to help you refine your resume! You can ask me to:
     setIsLoading(true);
 
     try {
-      const customKey = localStorage.getItem('cvpilot_custom_gemini_key') || undefined;
       const result = await processAIChatTurn(
         [...messages, userMsg],
         text,
-        resumeData,
-        customKey
+        resumeData
       );
 
       onUpdateResumeData(result.updatedResume);

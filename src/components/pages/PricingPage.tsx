@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMembership } from '../../context/MembershipContext';
 import { useAuth } from '../../context/AuthContext';
 import { CurrencySelector } from '../CurrencySelector';
-import { SUPPORTED_CURRENCIES, type CurrencyConfig } from '../../services/GlobalPaymentService';
+import { SUPPORTED_CURRENCIES, GlobalPaymentService, type CurrencyConfig } from '../../services/GlobalPaymentService';
 import { Navbar } from '../Navbar';
 import { Footer } from '../Footer';
 
@@ -141,7 +141,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 </div>
                 <div className="flex items-baseline gap-1.5 mb-6">
                   <span className="text-4xl md:text-5xl font-black text-blue-600 dark:text-blue-400">
-                    {selectedCurrency.symbol}{selectedCurrency.amount}
+                    {GlobalPaymentService.formatPrice(selectedCurrency)}
                   </span>
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     / month • {selectedCurrency.code}
@@ -185,7 +185,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 }`}
               >
                 <span className="material-symbols-outlined text-base">{isProMember ? 'verified' : 'lock'}</span>
-                {isProMember ? 'PRO MEMBER ACTIVE' : `UPGRADE TO PRO (${selectedCurrency.symbol}${selectedCurrency.amount}/MO)`}
+                {isProMember ? 'PRO MEMBER ACTIVE' : `UPGRADE TO PRO (${GlobalPaymentService.formatPrice(selectedCurrency)}/MO)`}
               </button>
             </div>
 
@@ -200,7 +200,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">How does billing work?</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Pro Membership is billed at $5.00 USD (or equivalent local currency) on a monthly subscription basis. You can cancel anytime with a single click in your billing portal.
+                  Pro Membership is billed at LKR 2,000 / month (approx $5.00 USD or equivalent local currency) on a monthly subscription basis. You can cancel anytime with a single click in your billing portal.
                 </p>
               </div>
 

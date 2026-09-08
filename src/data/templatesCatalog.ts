@@ -124,7 +124,7 @@ categoriesList.forEach((category) => {
       layoutType: layoutType,
       fontFamily: fontFamily,
       headerStyle: headerStyle,
-      badge: 'PRO $5/MO',
+      badge: 'PRO LKR 2,000/MO',
       popular: templateNum % 5 === 0
     });
   }

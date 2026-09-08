@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMembership } from '../context/MembershipContext';
 import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
-import { SUPPORTED_CURRENCIES, type CurrencyConfig } from '../services/GlobalPaymentService';
+import { SUPPORTED_CURRENCIES, GlobalPaymentService, type CurrencyConfig } from '../services/GlobalPaymentService';
 
 export const PricingSection: React.FC = () => {
   const { isProMember, openUpgradeModal } = useMembership();
@@ -110,7 +110,7 @@ export const PricingSection: React.FC = () => {
               </div>
               <div className="flex items-baseline gap-1.5 mb-6">
                 <span className="text-4xl md:text-5xl font-black text-blue-600 dark:text-blue-400">
-                  {selectedCurrency.symbol}{selectedCurrency.amount}
+                  {GlobalPaymentService.formatPrice(selectedCurrency)}
                 </span>
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   / month • {selectedCurrency.code}
@@ -154,7 +154,7 @@ export const PricingSection: React.FC = () => {
               }`}
             >
               <span className="material-symbols-outlined text-base">{isProMember ? 'verified' : 'lock'}</span>
-              {isProMember ? 'PRO MEMBER ACTIVE' : `UPGRADE TO PRO (${selectedCurrency.symbol}${selectedCurrency.amount}/MO)`}
+              {isProMember ? 'PRO MEMBER ACTIVE' : `UPGRADE TO PRO (${GlobalPaymentService.formatPrice(selectedCurrency)}/MO)`}
             </button>
           </div>
 

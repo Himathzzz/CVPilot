@@ -254,7 +254,7 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
 
   const handleExportPDF = () => {
     if (isTemplateLocked) {
-      showNotification('🔒 Premium template is locked! Upgrade for $5/mo to export.');
+      showNotification('🔒 Premium template is locked! Upgrade for LKR 2,000/mo to export.');
       openUpgradeModal();
       return;
     }

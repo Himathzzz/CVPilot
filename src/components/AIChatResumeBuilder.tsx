@@ -6,7 +6,7 @@ import type { ResumeData, ResumeTemplateId } from '../types/resume';
 import type { TemplateConfig } from '../types/templateEngine';
 import { TemplateEngine } from '../engine/TemplateEngine';
 import { getTemplateConfigById, TEMPLATE_PACKS } from '../data/templatePacks';
-import { processAIChatTurn, calculateATSScore, type ChatMessage } from '../services/aiChatService';
+import { processAIChatTurn, type ChatMessage } from '../services/aiChatService';
 import { getEmptyResumeData } from '../utils/aiGenerator';
 import { ThemeToggle } from './ThemeToggle';
 import { UpgradeModal } from './UpgradeModal';
@@ -124,8 +124,6 @@ I am your dedicated Executive Career Architect with deep ATS calibration and mul
   const [zoomScale, setZoomScale] = useState(0.85);
   const [mobileTab, setMobileTab] = useState<'chat' | 'preview'>('chat');
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
-  const [customApiKey, setCustomApiKey] = useState(() => localStorage.getItem('cvpilot_custom_gemini_key') || '');
   const [notification, setNotification] = useState<string | null>(null);
   const [expandedThinkingIds, setExpandedThinkingIds] = useState<Record<string, boolean>>({ msg_welcome: false });
 
@@ -197,8 +195,7 @@ I am your dedicated Executive Career Architect with deep ATS calibration and mul
       const result = await processAIChatTurn(
         [...messages, userMsg],
         text,
-        resumeData,
-        customApiKey
+        resumeData
       );
 
       // Update resume state
@@ -276,11 +273,6 @@ Tell me about your career background, paste notes, or pick a preset starter to g
     }
   };
 
-  const handleSaveApiKey = () => {
-    localStorage.setItem('cvpilot_custom_gemini_key', customApiKey);
-    setApiKeyModalOpen(false);
-    showToast('🔑 API key saved!');
-  };
 
   const handleTemplateChange = (templateId: string) => {
     const newConfig = getTemplateConfigById(templateId);
@@ -327,11 +319,8 @@ Tell me about your career background, paste notes, or pick a preset starter to g
               <span className="material-symbols-outlined text-lg">forum</span>
             </div>
             <div>
-              <div className="font-extrabold text-sm text-white tracking-tight flex items-center gap-1.5">
+              <div className="font-extrabold text-sm text-white tracking-tight">
                 AI CV Copilot
-                <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-1.5 py-0.2 rounded-full">
-                  LIVE CANVAS
-                </span>
               </div>
               <p className="text-[10px] text-slate-400">Natural language interactive CV synthesis</p>
             </div>
@@ -362,15 +351,6 @@ Tell me about your career background, paste notes, or pick a preset starter to g
 
         {/* Right Top Actions */}
         <div className="flex items-center gap-2">
-          {/* Model / Settings button */}
-          <button
-            onClick={() => setApiKeyModalOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-xs text-slate-300 font-semibold transition-colors"
-            title="Configure AI Model or Custom API Key"
-          >
-            <span className="material-symbols-outlined text-sm text-amber-400">smart_toy</span>
-            <span>{customApiKey ? 'Custom Key Active' : 'Neural Engine'}</span>
-          </button>
 
           <button
             onClick={handleResetChat}
@@ -658,16 +638,10 @@ Tell me about your career background, paste notes, or pick a preset starter to g
           {/* Canvas Toolbar Controls */}
           <div className="p-2.5 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className={`w-2.5 h-2.5 rounded-full ${isResumeEmpty ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`}></span>
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
-                {isResumeEmpty ? 'Canvas: Awaiting Career Input' : `Live Preview: ${currentConfig.name}`}
+              <span className={`w-2 h-2 rounded-full ${isResumeEmpty ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
+              <span className="text-xs font-semibold text-slate-200">
+                {isResumeEmpty ? 'Resume Preview' : currentConfig.name}
               </span>
-              {!isResumeEmpty && (
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-bold flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px]">verified</span>
-                  ATS: {calculateATSScore(resumeData).score}/100
-                </span>
-              )}
             </div>
 
             {/* Template Selector & Theme Color Picker */}
@@ -779,65 +753,6 @@ Tell me about your career background, paste notes, or pick a preset starter to g
 
       </main>
 
-      {/* API Key / Model Settings Modal */}
-      {apiKeyModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-amber-400">tune</span>
-                AI Model & API Settings
-              </h3>
-              <button
-                onClick={() => setApiKeyModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs text-slate-300 leading-relaxed">
-              <p>
-                CV PILOT provides an **instant built-in Neural Resume Engine** with zero setup required.
-              </p>
-              <p>
-                Optionally, you can connect your own **Google Gemini API Key** for enhanced deep conversational generation.
-              </p>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-200 mb-1">
-                  Custom Google Gemini API Key (Optional)
-                </label>
-                <input
-                  type="password"
-                  value={customApiKey}
-                  onChange={(e) => setCustomApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold"
-                />
-                <p className="text-[10px] text-slate-500 mt-1">
-                  Stored securely in your browser's local storage.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setApiKeyModalOpen(false)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveApiKey}
-                className="px-4 py-2 rounded-xl bg-gold hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md"
-              >
-                Save Settings
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Template Library Modal */}
       <TemplateLibraryModal

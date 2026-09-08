@@ -40,7 +40,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
               <p>By accessing or using CV PILOT (https://cvpilot.space), you agree to be bound by these Terms of Service. If you do not agree, please do not use our service.</p>
               
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">2. Membership & Subscriptions</h4>
-              <p>CV PILOT offers a Basic Free Plan (1 CV limit) and a Pro Membership subscription priced at <strong>$5.00 / month</strong>. By subscribing to Pro, you authorize monthly recurring billing to your selected payment method until cancelled.</p>
+              <p>CV PILOT offers a Basic Free Plan (1 CV limit) and a Pro Membership subscription priced at <strong>LKR 2,000 / month</strong> (approx $5.00 USD). By subscribing to Pro, you authorize monthly recurring billing to your selected payment method until cancelled.</p>
               
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">3. Account & User Data</h4>
               <p>All resume data and uploaded content remain the intellectual property of the user. We respect user privacy and do not sell user data to third parties.</p>
@@ -62,7 +62,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ type, onClose }) => {
             <>
               <p className="font-semibold">Last Updated: August 2026</p>
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">1. Cancellation Policy</h4>
-              <p>You can cancel your Pro Membership ($5.00/month) at any time through your account settings or by contacting support. Upon cancellation, your subscription will remain active until the end of your current billing period.</p>
+              <p>You can cancel your Pro Membership (LKR 2,000/month or approx $5.00 USD) at any time through your account settings or by contacting support. Upon cancellation, your subscription will remain active until the end of your current billing period.</p>
               
               <h4 className="font-bold text-sm text-navy dark:text-white uppercase mt-3">2. Refund Eligibility</h4>
               <p>We offer a 7-day money-back guarantee if you are dissatisfied with Pro services. Contact support at cvpilot.site.je@gmail.com for assistance.</p>

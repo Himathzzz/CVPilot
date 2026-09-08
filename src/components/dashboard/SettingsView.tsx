@@ -76,7 +76,7 @@ export const SettingsView: React.FC = () => {
                   ? 'bg-amber-500/10 text-gold border border-amber-500/30'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
               }`}>
-                {isProMember ? 'PRO Member ($5/mo)' : 'Basic Free Plan'}
+                {isProMember ? 'PRO Member (LKR 2,000/mo)' : 'Basic Free Plan'}
               </span>
             </div>
             <div className="pt-sm border-t border-outline-variant dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
@@ -162,7 +162,7 @@ export const SettingsView: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-sm text-navy dark:text-white">
-                    {isProMember ? 'PRO Membership ($5.00/month)' : 'Basic Free Tier'}
+                    {isProMember ? 'PRO Membership (LKR 2,000/month)' : 'Basic Free Tier'}
                   </span>
                   <span className={`px-2 py-0.5 text-[10px] font-extrabold rounded ${
                     isProMember ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
@@ -182,7 +182,7 @@ export const SettingsView: React.FC = () => {
                   onClick={openUpgradeModal}
                   className="px-4 py-2.5 bg-gold hover:bg-[#8e6f3d] text-navy font-bold text-xs rounded-xl transition-colors whitespace-nowrap uppercase tracking-wider"
                 >
-                  Upgrade to Pro ($5/mo)
+                  Upgrade to Pro (LKR 2,000/mo)
                 </button>
               ) : (
                 <button

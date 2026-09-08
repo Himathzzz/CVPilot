@@ -221,16 +221,21 @@ export const synthesizeResumeFromChat = (
   }
 
   // Full Name
-  const nameIntroMatch = text.match(/(?:my name is|i am|i'm|name:\s*)\s*([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i);
+  const nameIntroMatch = text.match(/(?:my name is|i am|i'm|name:\s*)\s*([A-Za-z]+(?:\s+[A-Za-z]+)+?)(?=\s+(?:location|email|phone|tel|mobile|summary|role|title|for|at|based)|\n|,|$)/i);
   if (nameIntroMatch) {
-    updatedResume.personalInfo.fullName = nameIntroMatch[1].trim();
-    updatedSections.push('Full Name');
+    let extractedName = nameIntroMatch[1].trim();
+    extractedName = extractedName.replace(/\s+(?:location|email|phone|tel|summary|role).*$/i, '').trim();
+    if (extractedName) {
+      updatedResume.personalInfo.fullName = extractedName;
+      updatedSections.push('Full Name');
+    }
   } else {
     // Extract first 2-3 capitalized words from the very first line before email/phone
     const firstLine = text.split('\n')[0].trim();
     const nameCandidate = firstLine
       .replace(/contact\.[^\s]+|[a-zA-Z0-9._%+-]+@[^\s]+|[\d\s\-.+()]{7,}|\b(?:\d{1,4}[,\s]+)?[A-Za-z0-9\s]+(?:Place|Road|St|Ave|Drive|NL|ON|CA|NY)\b.*$/gi, '')
       .replace(/^(?:resume|cv|curriculum vitae|profile)\s*[:=]?\s*/i, '')
+      .replace(/\s+(?:location|email|phone|tel|summary|role).*$/i, '')
       .trim();
 
     if (nameCandidate && nameCandidate.split(/\s+/).length >= 2 && nameCandidate.length < 35 && !/skills|experience|education/i.test(nameCandidate)) {
@@ -512,8 +517,10 @@ export const synthesizeResumeFromChat = (
   // =========================================================================
   // 8. CALIBRATE TARGET TITLE & PROFESSIONAL SUMMARY
   // =========================================================================
-  let targetTitle = 'Youth Leader, Arts Assistant & Childcare Provider';
-  if (/software|engineer|developer|frontend|backend/i.test(lower)) {
+  let targetTitle = 'Professional Specialist';
+  if (/cleaner|cleaning|housekeeping|janitor|custodian|facility/i.test(lower)) {
+    targetTitle = 'Commercial & Residential Cleaner';
+  } else if (/software|engineer|developer|frontend|backend/i.test(lower)) {
     targetTitle = 'Software Engineer';
   } else if (/designer|ui\/ux|figma/i.test(lower)) {
     targetTitle = 'Product & UX Designer';
@@ -521,14 +528,20 @@ export const synthesizeResumeFromChat = (
     targetTitle = 'Financial & Accounting Specialist';
   } else if (/nurse|healthcare|medical/i.test(lower)) {
     targetTitle = 'Healthcare Professional';
+  } else if (/cadets|art teacher|baby sitter|youth/i.test(lower)) {
+    targetTitle = 'Youth Leader, Arts Assistant & Childcare Provider';
   }
 
   updatedResume.personalInfo.jobTitle = targetTitle;
   updatedSections.push('Calibrated Target Title');
 
-  // Generate Bespoke Tailored Summary
-  const candidateName = updatedResume.personalInfo.fullName || 'Dedicated Candidate';
-  if (/cadets|art teacher|baby sitter|high school/i.test(lower)) {
+  // Generate or Extract Bespoke Tailored Summary
+  const explicitSummaryMatch = text.match(/(?:professional summary|summary|profile|about me|bio)\s*[:=]\s*([\s\S]+?)(?=\n\s*(?:work experience|experience|skills|core skills|education|certifications)|\n\n|$)/i);
+  if (explicitSummaryMatch && explicitSummaryMatch[1].trim().length > 20) {
+    updatedResume.personalInfo.summary = explicitSummaryMatch[1].trim();
+  } else if (/cleaner|cleaning|housekeeping|janitor|custodian/i.test(lower)) {
+    updatedResume.personalInfo.summary = `Reliable, safety-conscious, and detail-oriented Cleaner with proven expertise in commercial and residential sanitation, deep cleaning, and adherence to safety and hygiene protocols. Committed to delivering spotless, compliant, and welcoming environments.`;
+  } else if (/cadets|art teacher|baby sitter|high school/i.test(lower)) {
     updatedResume.personalInfo.summary = `Motivated and dependable student leader with hands-on experience in youth arts instruction, front-desk administrative support, and dedicated childcare. Proven track record of leadership and discipline as a Senior Officer with the Royal Newfoundland Regiment Army Cadets (2515 Corps), recognized for organizing field training exercises, fostering community spirit, and excelling in team collaboration. Committed to bringing positive energy, creative problem solving, and exceptional customer service to dynamic work environments.`;
   } else {
     updatedResume.personalInfo.summary = `Results-oriented and motivated ${targetTitle} with proven capability in executing multi-faceted tasks, collaborating across diverse teams, and delivering high-quality results. Recognized for strong communication, organizational discipline, and proactive problem solving.`;
@@ -540,8 +553,7 @@ export const synthesizeResumeFromChat = (
   updatedResume.themeColor = 'navy';
   // Ensure photo is hidden by default unless explicitly asked
   updatedResume.personalInfo.showPhoto = false;
-  updatedResume.personalInfo.photoUrl = '';
-
+  const candidateName = updatedResume.personalInfo.fullName || 'Candidate';
   const atsResult = calculateATSScore(updatedResume);
   thinkingProcess.push(`[Verification Complete] Synthesized CV for ${candidateName} (${targetTitle}). Computed ATS Score: ${atsResult.score}/100.`);
 
@@ -577,18 +589,36 @@ export const synthesizeResumeFromChat = (
   };
 };
 
+import { generateResumeWithGemini } from './geminiService';
+
 /**
- * Main AI Chat Processor with Simulated Neural Reasoning Time
+ * Main AI Chat Processor
+ * Connects directly to Google Gemini Flash API for true LLM parsing,
+ * and gracefully falls back to local synthesis if offline or quota exceeded.
  */
 export const processAIChatTurn = async (
-  _messages: ChatMessage[],
+  messages: ChatMessage[],
   userInput: string,
   currentResume: ResumeData,
-  _customApiKey?: string
+  customApiKey?: string
 ): Promise<ChatProcessingResult> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(synthesizeResumeFromChat(userInput, currentResume));
-    }, 450);
-  });
+  try {
+    // Attempt Gemini Generation
+    return await generateResumeWithGemini(messages, userInput, currentResume, customApiKey);
+  } catch (err: any) {
+    console.warn('[AI Service] Gemini API call failed or unavailable, using local synthesis fallback:', err?.message || err);
+
+    // Fallback to local heuristic engine
+    const localResult = synthesizeResumeFromChat(userInput, currentResume);
+
+    // If an error happened, add a subtle note in thinkingProcess so user is aware
+    if (err?.message?.includes('NO_API_KEY')) {
+      localResult.thinkingProcess.unshift('[Notice] Running in Offline / Local Mode. Connect your Gemini API Key in settings for deep reasoning.');
+    } else if (err?.message) {
+      localResult.thinkingProcess.unshift(`[Notice] Cloud API rate limited or offline (${err.message.slice(0, 60)}...). Local engine engaged.`);
+    }
+
+    return localResult;
+  }
 };
+

@@ -108,7 +108,7 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
                 className="bg-gold hover:bg-[#8e6f3d] text-navy font-black text-xs px-4 py-2 rounded-lg uppercase flex items-center gap-1.5 shadow-sm transition-colors border border-gold"
               >
                 <span className="material-symbols-outlined text-sm">workspace_premium</span>
-                Upgrade to Pro ($5/mo)
+                Upgrade to Pro (LKR 2,000/mo)
               </button>
             )}
             <button 
@@ -153,7 +153,7 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
               onClick={() => setFilterType('pro')}
               className={`px-3 py-1 font-bold rounded-md transition-all ${filterType === 'pro' ? 'bg-navy dark:bg-gold text-white dark:text-navy' : 'text-navy dark:text-slate-300'}`}
             >
-              Pro $5/mo ({TEMPLATE_PACKS.filter(t => t.isPremium).length})
+              Pro LKR 2,000/mo ({TEMPLATE_PACKS.filter(t => t.isPremium).length})
             </button>
           </div>
 
@@ -294,7 +294,7 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
                         {tpl.isPremium ? (
                           <span className="bg-navy text-gold text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm flex items-center gap-1 border border-gold/40">
                             <span className="material-symbols-outlined text-xs">lock</span>
-                            PRO $5/MO
+                            PRO LKR 2,000/MO
                           </span>
                         ) : (
                           <span className="bg-emerald-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm">

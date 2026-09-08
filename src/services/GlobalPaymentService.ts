@@ -12,10 +12,10 @@ export interface CurrencyConfig {
 }
 
 export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
+  { code: 'LKR', symbol: 'LKR ', amount: 2000, monthlyText: 'LKR 2,000 / month', name: 'Sri Lankan Rupee', flag: '🇱🇰' },
   { code: 'USD', symbol: '$', amount: 5.00, monthlyText: '$5.00 / month', name: 'US Dollar', flag: '🇺🇸' },
   { code: 'EUR', symbol: '€', amount: 4.50, monthlyText: '€4.50 / month', name: 'Euro', flag: '🇪🇺' },
   { code: 'GBP', symbol: '£', amount: 3.99, monthlyText: '£3.99 / month', name: 'British Pound', flag: '🇬🇧' },
-  { code: 'LKR', symbol: 'Rs. ', amount: 1500, monthlyText: 'Rs. 1,500 / month', name: 'Sri Lankan Rupee', flag: '🇱🇰' },
   { code: 'INR', symbol: '₹', amount: 420, monthlyText: '₹420 / month', name: 'Indian Rupee', flag: '🇮🇳' },
 ];
 
@@ -50,7 +50,10 @@ export class GlobalPaymentService {
    * Helper to format currency price for displays
    */
   static formatPrice(currency: CurrencyConfig): string {
-    return `${currency.symbol}${currency.amount}`;
+    const formattedAmount = currency.amount >= 1000 
+      ? currency.amount.toLocaleString('en-US') 
+      : currency.amount.toFixed(2).replace(/\.00$/, '');
+    return `${currency.symbol}${formattedAmount}`;
   }
 
   /**
@@ -98,8 +101,8 @@ export class GlobalPaymentService {
       cancel_url: `${window.location.origin}/?payment=cancelled`,
       notify_url: `${window.location.origin}/api/webhooks`,
       order_id: orderId,
-      items: 'CV PILOT Pro Membership ($5/mo)',
-      currency: curr.code === 'LKR' ? 'LKR' : 'USD',
+      items: `CV PILOT Pro Membership (${this.formatPrice(curr)}/mo)`,
+      currency: curr.code,
       amount: amountStr,
       first_name: nameParts[0] || 'User',
       last_name: nameParts.slice(1).join(' ') || 'Customer',

@@ -70,7 +70,7 @@ export const RefundPage: React.FC<RefundPageProps> = ({
               <section className="space-y-3">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">1. Refund Eligibility Window</h2>
                 <p>
-                  You are eligible for a full 100% refund on your Pro Membership subscription ($5.00/month or local equivalent) if your refund request is submitted within <strong>7 days</strong> of the initial purchase date or automatic monthly renewal date.
+                  You are eligible for a full 100% refund on your Pro Membership subscription (LKR 2,000/month or local equivalent) if your refund request is submitted within <strong>7 days</strong> of the initial purchase date or automatic monthly renewal date.
                 </p>
               </section>
 

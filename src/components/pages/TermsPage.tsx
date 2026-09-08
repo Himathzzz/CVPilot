@@ -69,7 +69,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({
                 </p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Basic Free Plan:</strong> Allows generation and storage of up to 1 CV document using standard templates.</li>
-                  <li><strong>Pro Membership Subscription:</strong> Offers unlimited CV generation, access to 100+ executive templates, AI enhancement tools, multi-format exports, and premium theme customization for $5.00 USD (or equivalent local currency) per month.</li>
+                  <li><strong>Pro Membership Subscription:</strong> Offers unlimited CV generation, access to 100+ executive templates, AI enhancement tools, multi-format exports, and premium theme customization for LKR 2,000 / month (or approx $5.00 USD / equivalent local currency).</li>
                 </ul>
               </section>
 
@@ -86,7 +86,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({
               <section className="space-y-3">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">4. Subscription Renewal & Billing</h2>
                 <p>
-                  Pro Membership subscriptions are billed on a monthly recurring schedule ($5.00/month or local equivalent). By subscribing, you authorize PayHere to charge your designated payment method on a recurring monthly basis until you cancel. You may cancel your subscription auto-renewal at any time through your account settings or by contacting our support team.
+                  Pro Membership subscriptions are billed on a monthly recurring schedule (LKR 2,000/month or local equivalent). By subscribing, you authorize PayHere to charge your designated payment method on a recurring monthly basis until you cancel. You may cancel your subscription auto-renewal at any time through your account settings or by contacting our support team.
                 </p>
               </section>
 

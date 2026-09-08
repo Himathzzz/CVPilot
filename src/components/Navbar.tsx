@@ -234,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       className="text-left py-xs text-[11px] font-extrabold uppercase text-blue-600 dark:text-blue-400 hover:underline transition-colors flex items-center gap-1 border-t border-slate-100 dark:border-slate-700 pt-1.5"
                     >
                       <span className="material-symbols-outlined text-sm">workspace_premium</span>
-                      Upgrade to Pro ($5/mo)
+                      Upgrade to Pro (LKR 2,000/mo)
                     </button>
                   )}
 
