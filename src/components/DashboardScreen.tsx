@@ -259,28 +259,6 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
             </div>
           </section>
 
-          {/* AI Chat Spotlight Banner */}
-          <section className="mb-xl p-5 md:p-6 bg-gradient-to-r from-navy via-slate-900 to-indigo-950 text-white rounded-2xl border border-gold/30 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="relative z-10 max-w-xl space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold/20 text-gold border border-gold/40 text-[11px] font-bold uppercase tracking-wider">
-                <span className="material-symbols-outlined text-xs">auto_awesome</span>
-                ChatGPT-Style Conversational Builder
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold font-display tracking-tight text-white">
-                Build a Complete CV Just by Chatting
-              </h2>
-              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-                Paste your rough notes, LinkedIn bio, or tell the AI about your work history. Watch a high-impact, ATS-friendly resume synthesize in real-time.
-              </p>
-            </div>
-            <button
-              onClick={handleOpenAIChat}
-              className="relative z-10 bg-gold hover:bg-amber-400 text-navy font-extrabold text-xs uppercase tracking-wider px-6 py-3.5 rounded-xl shadow-lg shadow-gold/20 flex items-center gap-2 transition-all shrink-0 hover:scale-105"
-            >
-              <span className="material-symbols-outlined text-base">forum</span>
-              Launch AI Chat Copilot
-            </button>
-          </section>
 
           {/* Recent Resumes Bento Grid */}
           <section className="mb-xl">
