@@ -248,13 +248,29 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </button>
               <button 
                 onClick={() => {
+                  if (!isProMember && resumes.length >= 1) {
+                    openUpgradeModal();
+                    return;
+                  }
                   const createdId = createNewResume('modern-minimal', true);
                   if (createdId) onNavigateToBuilder();
                 }}
-                className="bg-navy dark:bg-slate-800 hover:bg-[#242f45] text-white font-bold font-label-caps text-xs uppercase px-5 py-3 rounded-xl hover:shadow-md transition-all flex items-center gap-2 border border-slate-700"
+                className={`font-bold font-label-caps text-xs uppercase px-5 py-3 rounded-xl hover:shadow-md transition-all flex items-center gap-2 border ${
+                  !isProMember && resumes.length >= 1
+                    ? 'bg-slate-800 text-slate-300 border-amber-500/40 hover:bg-slate-750'
+                    : 'bg-navy dark:bg-slate-800 hover:bg-[#242f45] text-white border-slate-700'
+                }`}
+                title={!isProMember && resumes.length >= 1 ? 'Upgrade to Pro to create more resumes' : 'Create a blank resume'}
               >
-                <span className="material-symbols-outlined text-[18px] text-gold">add</span>
+                <span className={`material-symbols-outlined text-[18px] ${!isProMember && resumes.length >= 1 ? 'text-amber-400' : 'text-gold'}`}>
+                  {!isProMember && resumes.length >= 1 ? 'lock' : 'add'}
+                </span>
                 CREATE BLANK
+                {!isProMember && resumes.length >= 1 && (
+                  <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider ml-1">
+                    PRO
+                  </span>
+                )}
               </button>
             </div>
           </section>
@@ -363,16 +379,41 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               {/* Create New Resume Card */}
               <div 
                 onClick={() => {
+                  if (!isProMember && resumes.length >= 1) {
+                    openUpgradeModal();
+                    return;
+                  }
                   const createdId = createNewResume('modern-minimal', true);
                   if (createdId) onNavigateToBuilder();
                 }}
-                className="border border-gold border-dashed bg-surface-container-low dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900 transition-all cursor-pointer flex flex-col items-center justify-center p-xl h-full text-center group min-h-[220px] rounded shadow-xs"
+                className={`border border-dashed transition-all cursor-pointer flex flex-col items-center justify-center p-xl h-full text-center group min-h-[220px] rounded shadow-xs ${
+                  !isProMember && resumes.length >= 1
+                    ? 'border-amber-500/50 bg-amber-500/5 hover:bg-amber-500/10'
+                    : 'border-gold border-dashed bg-surface-container-low dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900'
+                }`}
               >
-                <div className="w-12 h-12 rounded-full border border-gold flex items-center justify-center bg-white dark:bg-slate-800 mb-4 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-gold">add</span>
+                <div className={`w-12 h-12 rounded-full border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform ${
+                  !isProMember && resumes.length >= 1
+                    ? 'border-amber-500 bg-amber-500/10 text-amber-400'
+                    : 'border-gold bg-white dark:bg-slate-800 text-gold'
+                }`}>
+                  <span className="material-symbols-outlined">
+                    {!isProMember && resumes.length >= 1 ? 'lock' : 'add'}
+                  </span>
                 </div>
-                <h3 className="font-label-caps text-label-caps text-navy dark:text-slate-200 font-medium mb-2">Create New Resume</h3>
-                <p className="font-caption text-caption text-navy dark:text-slate-400 opacity-80 max-w-[200px]">Start from scratch or pick from 100+ templates.</p>
+                <div className="flex items-center gap-1.5 mb-2">
+                  <h3 className="font-label-caps text-label-caps text-navy dark:text-slate-200 font-medium">Create New Resume</h3>
+                  {!isProMember && resumes.length >= 1 && (
+                    <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider">
+                      PRO
+                    </span>
+                  )}
+                </div>
+                <p className="font-caption text-caption text-navy dark:text-slate-400 opacity-80 max-w-[200px]">
+                  {!isProMember && resumes.length >= 1
+                    ? 'Free Plan limit reached (1 CV). Upgrade to Pro to create unlimited CVs.'
+                    : 'Start from scratch or pick from 100+ templates.'}
+                </p>
               </div>
             </div>
           </section>

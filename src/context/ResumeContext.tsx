@@ -118,34 +118,8 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const createNewResume = (templateId: string = 'modern-minimal', isBlank: boolean = true): string | null => {
-    // Basic plan limit enforcement: Only 1 CV allowed for free users
+    // Basic plan limit enforcement: Free users are strictly limited to 1 CV
     if (!isProMember && resumes.length >= 1) {
-      const confirmReset = window.confirm(
-        'Free Plan allows 1 CV. Would you like to start fresh with a blank CV on your current resume? (Click Cancel to keep your current CV or upgrade to Pro)'
-      );
-      if (confirmReset) {
-        const existingId = resumes[0].id;
-        const blankData = getEmptyResumeData(user?.displayName || undefined, user?.email || undefined);
-        blankData.templateId = templateId;
-        blankData.title = newResumeTitle(templateId);
-        const currentDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-        const resetResume: SavedUserResume = {
-          ...resumes[0],
-          title: newResumeTitle(templateId),
-          templateId,
-          lastEdited: currentDate,
-          data: blankData,
-          config: getTemplateConfigById(templateId),
-        };
-        const updated = resumes.map(r => r.id === existingId ? resetResume : r);
-        setResumes(updated);
-        setActiveResumeId(existingId);
-        localStorage.setItem(storageKey, JSON.stringify(updated));
-        localStorage.setItem('cvpilot_builder_draft_resume', JSON.stringify(blankData));
-        saveResumeToCloud(resetResume);
-        return existingId;
-      }
       openUpgradeModal();
       return null;
     }
