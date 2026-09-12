@@ -98,6 +98,8 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [aiNotification, setAiNotification] = useState<string | null>(null);
   const [targetRoleInput, setTargetRoleInput] = useState(resumeData.personalInfo.jobTitle || '');
+  const [roleError, setRoleError] = useState(false);
+  const targetRoleInputRef = useRef<HTMLInputElement>(null);
 
   const showNotification = (msg: string) => {
     setAiNotification(msg);
@@ -126,18 +128,30 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
 
   // AI Handlers
   const handleGenerateAISummary = async () => {
+    const role = (targetRoleInput || resumeData.personalInfo.jobTitle || '').trim();
+    if (!role) {
+      setRoleError(true);
+      showNotification('enter job role');
+      targetRoleInputRef.current?.focus();
+      return;
+    }
+    setRoleError(false);
+    if (!targetRoleInput) {
+      setTargetRoleInput(role);
+    }
+
     setIsGeneratingSummary(true);
     try {
-      const role = resumeData.personalInfo.jobTitle || 'Professional';
-      const summary = await generateAISummary(role, resumeData.experiences.map(e => e.role).join(', '));
+      const summary = generateAISummary(role, resumeData.personalInfo.summary);
       setResumeData(prev => ({
         ...prev,
         personalInfo: {
           ...prev.personalInfo,
+          jobTitle: prev.personalInfo.jobTitle || role,
           summary
         }
       }));
-      showNotification('✨ AI Summary generated!');
+      showNotification(`✨ AI Summary generated for ${role}!`);
     } catch (err) {
       console.error(err);
       showNotification('AI Summary error.');
@@ -162,20 +176,43 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
   };
 
   const handleSuggestSkills = async () => {
+    const role = (targetRoleInput || resumeData.personalInfo.jobTitle || '').trim();
+    if (!role) {
+      setRoleError(true);
+      showNotification('enter job role');
+      targetRoleInputRef.current?.focus();
+      return;
+    }
+    setRoleError(false);
+    if (!targetRoleInput) {
+      setTargetRoleInput(role);
+    }
+
     try {
-      const skills = await suggestSkillsForRole(targetRoleInput);
+      const skills = suggestSkillsForRole(role);
       if (skills && skills.length > 0) {
         setResumeData(prev => {
-          const techCategory = prev.skillCategories.find(s => s.categoryName.toLowerCase().includes('technical')) || prev.skillCategories[0];
-          if (!techCategory) return prev;
-          const currentSkillsList: string[] = techCategory.skills || [];
-          const updatedSkills: string[] = Array.from(new Set([...currentSkillsList, ...(skills as unknown as string[])]));
+          if (!prev.skillCategories || prev.skillCategories.length === 0) {
+            return {
+              ...prev,
+              skillCategories: skills
+            };
+          }
+          const updated = [...prev.skillCategories];
+          for (const newCat of skills) {
+            const match = updated.find(c => c.categoryName.toLowerCase() === newCat.categoryName.toLowerCase());
+            if (match) {
+              match.skills = Array.from(new Set([...match.skills, ...newCat.skills]));
+            } else {
+              updated.push(newCat);
+            }
+          }
           return {
             ...prev,
-            skillCategories: prev.skillCategories.map(s => s.id === techCategory.id ? { ...s, skills: updatedSkills } : s)
+            skillCategories: updated
           };
         });
-        showNotification(`💡 Added ${skills.length} AI suggested skills!`);
+        showNotification(`💡 Added AI skills for ${role}!`);
       }
     } catch (err) {
       console.error(err);
@@ -192,6 +229,10 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
         [field]: val
       }
     }));
+    if (field === 'jobTitle' && !targetRoleInput.trim()) {
+      setTargetRoleInput(val);
+      if (val.trim()) setRoleError(false);
+    }
   };
 
   const handleAddExperience = () => {
@@ -457,15 +498,29 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
 
               <div className="flex gap-1.5">
                 <input 
+                  ref={targetRoleInputRef}
                   type="text" 
                   value={targetRoleInput}
-                  onChange={(e) => setTargetRoleInput(e.target.value)}
-                  placeholder="Target Role" 
-                  className="form-input text-xs py-2 px-3 bg-slate-800/80 text-white border-slate-700 rounded-xl w-full"
+                  onChange={(e) => {
+                    setTargetRoleInput(e.target.value);
+                    if (roleError) setRoleError(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleGenerateAISummary();
+                    }
+                  }}
+                  placeholder="Target Role (e.g. Cleaner, Nurse, Engineer)" 
+                  className={`form-input text-xs py-2 px-3 bg-slate-800/80 text-white border rounded-xl w-full transition-all ${
+                    roleError 
+                      ? 'border-red-500 ring-2 ring-red-500/40 bg-red-950/20 placeholder-red-300' 
+                      : 'border-slate-700 focus:border-blue-500'
+                  }`}
                 />
                 <button
                   onClick={handleSuggestSkills}
-                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 rounded-xl flex items-center shrink-0"
+                  className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-3 rounded-xl flex items-center shrink-0 transition-colors"
                   title="AI Skill Suggestions"
                 >
                   <span className="material-symbols-outlined text-sm">lightbulb</span>

@@ -6,31 +6,85 @@ import type { ResumeData, SkillCategory } from '../types/resume';
  * suggests key skills, and auto-populates rich resume samples.
  */
 
-export const generateAISummary = (jobTitle: string, userSummary?: string, tone: 'professional' | 'executive' | 'creative' = 'executive'): string => {
-  const role = jobTitle.trim() || 'Software Professional';
-  
+export const generateAISummary = (jobTitle: string, userSummary?: string, _tone: 'professional' | 'executive' | 'creative' = 'professional'): string => {
+  const role = (jobTitle || '').trim();
+  const roleLower = role.toLowerCase();
+
+  // If user already has an existing summary to enhance
   if (userSummary && userSummary.length > 20) {
-    // Enhance existing summary
-    return `Results-driven ${role} with proven experience in ${userSummary.toLowerCase().replace(/^(results-driven|experienced|accomplished)\s*/i, '')}. Demonstrated track record of driving cross-functional alignment, optimizing system performance, and delivering high-ROI initiatives under tight deadlines.`;
+    return `Dedicated ${role} with proven experience in ${userSummary.toLowerCase().replace(/^(results-driven|experienced|accomplished|dedicated)\s*/i, '')}. Demonstrated track record of reliability, quality output, and operational excellence.`;
   }
 
-  const summariesByTone: Record<string, string[]> = {
-    executive: [
-      `Strategic and results-driven ${role} with 7+ years of experience leading high-impact initiatives, driving operational efficiency, and scaling cross-functional operations. Recognized for bridging strategic vision with tactical execution to achieve measurable business growth.`,
-      `Accomplished ${role} adept at steering multi-faceted projects from concept to execution. Expert in stakeholder management, architecture performance, and building resilient scalable solutions that drive organizational success.`
-    ],
-    professional: [
-      `Detail-oriented ${role} with comprehensive experience executing complex projects and delivering top-tier solutions. Proven capability in optimizing workflows, mentoring team members, and maintaining stringent quality standards.`,
-      `Passionate ${role} specialized in problem-solving, modern best practices, and collaborative delivery. Consistently delivers reliable high-quality outputs while driving continuous process improvement.`
-    ],
-    creative: [
-      `Forward-thinking ${role} crafting innovative digital solutions at the intersection of design, technology, and user strategy. Passionate about elevating brand narratives and delivering memorable user experiences.`,
-      `Dynamic ${role} known for blending creative problem-solving with rigorous execution to solve complex user and technical challenges.`
-    ]
-  };
+  // Cleaning / Facilities / Maintenance / Housekeeping
+  if (roleLower.includes('clean') || roleLower.includes('housekeep') || roleLower.includes('janitor') || roleLower.includes('custodian') || roleLower.includes('maid') || roleLower.includes('sanitat')) {
+    const cleaningSummaries = [
+      `Dedicated and detail-oriented ${role} with proven experience in maintaining high standards of cleanliness, hygiene, and facility safety. Skilled in operating cleaning equipment, handling sanitization protocols, and executing daily maintenance schedules with exceptional reliability.`,
+      `Reliable and hardworking ${role} with strong expertise in deep cleaning, waste management, and surface sanitization for commercial and residential premises. Known for punctuality, attention to detail, and adherence to safety guidelines.`,
+      `Thorough and energetic ${role} committed to creating spotless, hygienic, and welcoming environments. Adept at room turnover, inventory restocking, and working efficiently with minimal supervision.`
+    ];
+    return cleaningSummaries[Math.floor(Math.random() * cleaningSummaries.length)];
+  }
 
-  const options = summariesByTone[tone] || summariesByTone.executive;
-  return options[Math.floor(Math.random() * options.length)];
+  // Hospitality / Food & Beverage / Retail (waiter, chef, barista, cashier, sales)
+  if (roleLower.includes('waiter') || roleLower.includes('waitress') || roleLower.includes('chef') || roleLower.includes('cook') || roleLower.includes('barista') || roleLower.includes('cashier') || roleLower.includes('retail') || roleLower.includes('server')) {
+    const hospitalitySummaries = [
+      `Customer-focused and energetic ${role} with proven experience delivering prompt, friendly service in fast-paced environments. Adept at customer relations, order accuracy, and maintaining spotless workstations.`,
+      `Detail-oriented ${role} known for strong interpersonal skills, high punctuality, and efficient multitasking under pressure. Committed to providing exceptional guest experiences and building repeat business.`
+    ];
+    return hospitalitySummaries[Math.floor(Math.random() * hospitalitySummaries.length)];
+  }
+
+  // Drivers / Logistics / Security / Trades
+  if (roleLower.includes('driver') || roleLower.includes('security') || roleLower.includes('guard') || roleLower.includes('warehouse') || roleLower.includes('electric') || roleLower.includes('mechanic') || roleLower.includes('plumb')) {
+    const tradeSummaries = [
+      `Reliable and safety-conscious ${role} with a strong track record of punctuality, equipment maintenance, and adherence to safety regulations. Known for dependability, physical stamina, and professional work ethic.`,
+      `Skilled and dependable ${role} experienced in fast-paced operational workflows, routine inspections, and technical troubleshooting. Committed to error-free task completion and strict timeline compliance.`
+    ];
+    return tradeSummaries[Math.floor(Math.random() * tradeSummaries.length)];
+  }
+
+  // Healthcare / Nursing / Caregiving
+  if (roleLower.includes('nurse') || roleLower.includes('care') || roleLower.includes('medic') || roleLower.includes('doctor') || roleLower.includes('dental') || roleLower.includes('health')) {
+    const healthSummaries = [
+      `Compassionate and patient-centered ${role} committed to delivering high-quality healthcare assistance and maintaining rigorous clinical hygiene standards. Known for empathetic communication and reliable care delivery.`,
+      `Dedicated ${role} with strong background in patient monitoring, compassionate care support, and collaborative team communication in demanding healthcare settings.`
+    ];
+    return healthSummaries[Math.floor(Math.random() * healthSummaries.length)];
+  }
+
+  // Tech / Software / IT
+  if (roleLower.includes('engineer') || roleLower.includes('developer') || roleLower.includes('software') || roleLower.includes('tech') || roleLower.includes('data') || roleLower.includes('devops')) {
+    const techSummaries = [
+      `Results-driven ${role} with expertise in building scalable, robust software solutions and optimizing development workflows. Proven ability to translate complex technical requirements into high-performance deliverables.`,
+      `Passionate ${role} experienced in modern frameworks, system design, and collaborative development. Committed to delivering clean, maintainable code that drives operational efficiency.`
+    ];
+    return techSummaries[Math.floor(Math.random() * techSummaries.length)];
+  }
+
+  // Design / Creative
+  if (roleLower.includes('design') || roleLower.includes('ui') || roleLower.includes('ux') || roleLower.includes('creative') || roleLower.includes('art')) {
+    const designSummaries = [
+      `Creative and user-focused ${role} with a proven record of crafting engaging visual assets and intuitive digital experiences. Skilled in turning abstract concepts into high-impact designs.`,
+      `Innovative ${role} passionate about elevating brand narratives, user empathy, and delivering clean, memorable aesthetics across touchpoints.`
+    ];
+    return designSummaries[Math.floor(Math.random() * designSummaries.length)];
+  }
+
+  // Admin / Support / Office
+  if (roleLower.includes('admin') || roleLower.includes('assistant') || roleLower.includes('reception') || roleLower.includes('support') || roleLower.includes('clerk')) {
+    const adminSummaries = [
+      `Organized and proactive ${role} experienced in calendar management, correspondence, record maintenance, and providing stellar day-to-day administrative support.`,
+      `Detail-oriented ${role} with proven ability to optimize office operations, facilitate smooth communications, and maintain organized documentation under tight deadlines.`
+    ];
+    return adminSummaries[Math.floor(Math.random() * adminSummaries.length)];
+  }
+
+  // Default / General
+  const generalSummaries = [
+    `Dedicated and results-oriented ${role} with proven expertise in driving operational excellence, high-quality deliverables, and team success. Recognized for strong work ethic, adaptability, and consistent performance.`,
+    `Accomplished ${role} with a proven track record of dependability, attention to detail, and collaborative problem-solving. Committed to achieving organizational goals and maintaining superior service standards.`
+  ];
+  return generalSummaries[Math.floor(Math.random() * generalSummaries.length)];
 };
 
 export const enhanceBulletPoint = (rawText: string, _jobTitle?: string): string => {
@@ -56,6 +110,22 @@ export const enhanceBulletPoint = (rawText: string, _jobTitle?: string): string 
 export const suggestSkillsForRole = (jobTitle: string): SkillCategory[] => {
   const titleLower = jobTitle.toLowerCase();
 
+  if (titleLower.includes('clean') || titleLower.includes('housekeep') || titleLower.includes('janitor') || titleLower.includes('custodian')) {
+    return [
+      { id: '1', categoryName: 'Sanitization & Cleaning', skills: ['Deep Cleaning', 'Chemical Safety & Handling', 'Surface Disinfection', 'Waste Disposal', 'Floor Care & Buffing'] },
+      { id: '2', categoryName: 'Equipment & Maintenance', skills: ['Industrial Vacuuming', 'Pressure Washing', 'Facility Inspection', 'Inventory Restocking'] },
+      { id: '3', categoryName: 'Work Standards', skills: ['Health & Safety Compliance', 'Time Management', 'Attention to Detail', 'Reliability'] }
+    ];
+  }
+
+  if (titleLower.includes('waiter') || titleLower.includes('waitress') || titleLower.includes('server') || titleLower.includes('barista') || titleLower.includes('cashier')) {
+    return [
+      { id: '1', categoryName: 'Customer Service', skills: ['Order Taking', 'POS Systems', 'Menu Knowledge', 'Customer Relations', 'Cash Handling'] },
+      { id: '2', categoryName: 'Operations', skills: ['Table Turnover', 'Food Hygiene & Safety', 'Beverage Preparation', 'Inventory Check'] },
+      { id: '3', categoryName: 'Interpersonal', skills: ['Active Listening', 'Multitasking', 'Patience', 'Team Collaboration'] }
+    ];
+  }
+
   if (titleLower.includes('designer') || titleLower.includes('ux') || titleLower.includes('ui') || titleLower.includes('product designer')) {
     return [
       { id: '1', categoryName: 'Design & Prototyping', skills: ['Figma', 'UI/UX Design', 'Design Systems', 'Wireframing', 'User Research', 'Prototyping'] },
@@ -80,11 +150,11 @@ export const suggestSkillsForRole = (jobTitle: string): SkillCategory[] => {
     ];
   }
 
-  // Default general business/tech
+  // Default general business/trades
   return [
-    { id: '1', categoryName: 'Core Competencies', skills: ['Project Management', 'Strategic Planning', 'Process Optimization', 'Data Analysis', 'Problem Solving'] },
-    { id: '2', categoryName: 'Technical Proficiency', skills: ['Microsoft Office 365', 'Google Workspace', 'CRM Tools', 'SQL Basics', 'Workflow Automation'] },
-    { id: '3', categoryName: 'Soft Skills', skills: ['Cross-Team Communication', 'Leadership', 'Critical Thinking', 'Client Relations', 'Adaptability'] }
+    { id: '1', categoryName: 'Core Competencies', skills: ['Task Execution', 'Quality Assurance', 'Process Optimization', 'Safety Compliance', 'Problem Solving'] },
+    { id: '2', categoryName: 'Communication & Teamwork', skills: ['Team Collaboration', 'Reporting', 'Customer Service', 'Conflict Resolution'] },
+    { id: '3', categoryName: 'Personal Attributes', skills: ['Punctuality', 'Attention to Detail', 'Adaptability', 'Time Management'] }
   ];
 };
 
