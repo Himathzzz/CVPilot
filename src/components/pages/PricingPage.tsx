@@ -200,7 +200,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
                 <h3 className="font-bold text-sm text-slate-900 dark:text-white">How does billing work?</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Pro Membership is billed at LKR 2,000 / month (approx $5.00 USD or equivalent local currency) on a monthly subscription basis. You can cancel anytime with a single click in your billing portal.
+                  Pro Membership is billed at LKR 2,000 / month (approx $10.00 USD or equivalent local currency) on a monthly subscription basis. You can cancel anytime with a single click in your billing portal.
                 </p>
               </div>
 

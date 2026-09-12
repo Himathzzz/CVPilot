@@ -500,7 +500,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
         onSelectTemplateConfig={(config) => onNavigateToBuilder(config.id)}
       />
 
-      {/* $5 Pro Upgrade Modal */}
+      {/* Pro Upgrade Modal */}
       <UpgradeModal />
     </div>
   );

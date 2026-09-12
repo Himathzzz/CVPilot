@@ -1,7 +1,7 @@
 import { md5 } from '../utils/md5';
 
 export interface CurrencyConfig {
-  code: 'USD' | 'EUR' | 'GBP' | 'LKR' | 'INR';
+  code: 'USD' | 'LKR';
   symbol: string;
   amount: number;
   monthlyText: string;
@@ -11,10 +11,7 @@ export interface CurrencyConfig {
 
 export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
   { code: 'LKR', symbol: 'LKR ', amount: 2000, monthlyText: 'LKR 2,000 / month', name: 'Sri Lankan Rupee', flag: '🇱🇰' },
-  { code: 'USD', symbol: '$', amount: 5.00, monthlyText: '$5.00 / month', name: 'US Dollar', flag: '🇺🇸' },
-  { code: 'EUR', symbol: '€', amount: 4.50, monthlyText: '€4.50 / month', name: 'Euro', flag: '🇪🇺' },
-  { code: 'GBP', symbol: '£', amount: 3.99, monthlyText: '£3.99 / month', name: 'British Pound', flag: '🇬🇧' },
-  { code: 'INR', symbol: '₹', amount: 420, monthlyText: '₹420 / month', name: 'Indian Rupee', flag: '🇮🇳' },
+  { code: 'USD', symbol: '$', amount: 10.00, monthlyText: '$10.00 / month', name: 'US Dollar', flag: '🇺🇸' },
 ];
 
 export type PaymentGatewayId = 'payhere';

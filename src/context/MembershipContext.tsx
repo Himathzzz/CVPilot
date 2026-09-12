@@ -106,7 +106,7 @@ export const MembershipProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         await setDoc(doc(db, 'users', user.uid), {
           isProMember: true,
           proPurchasedAt: new Date().toISOString(),
-          plan: 'pro_monthly_5usd',
+          plan: 'pro_monthly_10usd',
           updatedAt: new Date().toISOString()
         }, { merge: true });
       } catch (err) {

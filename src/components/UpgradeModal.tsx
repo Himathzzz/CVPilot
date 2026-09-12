@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useMembership } from '../context/MembershipContext';
 import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
-import { 
-  SUPPORTED_CURRENCIES, 
-  GlobalPaymentService, 
-  type CurrencyConfig 
+import {
+  SUPPORTED_CURRENCIES,
+  GlobalPaymentService,
+  type CurrencyConfig
 } from '../services/GlobalPaymentService';
 
 export const UpgradeModal: React.FC = () => {
   const { isUpgradeModalOpen, closeUpgradeModal, downgradeToFree, isProMember } = useMembership();
   const { user } = useAuth();
-  
+
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'verifying' | 'success' | 'declined'>('idle');
@@ -60,7 +60,7 @@ export const UpgradeModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative">
-        
+
         {/* Header */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-850/50">
           <div>
@@ -70,7 +70,7 @@ export const UpgradeModal: React.FC = () => {
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Unlock Unlimited CVs, Executive Templates & AI Assistance</p>
           </div>
-          <button 
+          <button
             onClick={closeUpgradeModal}
             className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
@@ -80,15 +80,15 @@ export const UpgradeModal: React.FC = () => {
 
         {/* Modal Body */}
         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto font-sans">
-          
+
           {/* Currency Selector */}
           <div>
             <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Select Currency
             </label>
-            <CurrencySelector 
-              selectedCurrency={selectedCurrency} 
-              onSelectCurrency={setSelectedCurrency} 
+            <CurrencySelector
+              selectedCurrency={selectedCurrency}
+              onSelectCurrency={setSelectedCurrency}
             />
           </div>
 
@@ -157,9 +157,9 @@ export const UpgradeModal: React.FC = () => {
 
                 {/* PayHere Logo Graphic */}
                 <div className="flex justify-center items-center py-1">
-                  <img 
-                    src="/payhere-logo.png" 
-                    alt="PayHere Payment Gateway" 
+                  <img
+                    src="/payhere-logo.png"
+                    alt="PayHere Payment Gateway"
                     className="h-14 md:h-16 w-auto object-contain drop-shadow-md mx-auto"
                   />
                 </div>

@@ -69,7 +69,7 @@ export const TermsPage: React.FC<TermsPageProps> = ({
                 </p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Basic Free Plan:</strong> Allows generation and storage of up to 1 CV document using standard templates.</li>
-                  <li><strong>Pro Membership Subscription:</strong> Offers unlimited CV generation, access to 100+ executive templates, AI enhancement tools, multi-format exports, and premium theme customization for LKR 2,000 / month (or approx $5.00 USD / equivalent local currency).</li>
+                  <li><strong>Pro Membership Subscription:</strong> Offers unlimited CV generation, access to 100+ executive templates, AI enhancement tools, multi-format exports, and premium theme customization for LKR 2,000 / month (or approx $10.00 USD / equivalent local currency).</li>
                 </ul>
               </section>
 
