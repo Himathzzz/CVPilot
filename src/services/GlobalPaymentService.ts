@@ -122,7 +122,7 @@ export class GlobalPaymentService {
     const config = this.getPayHereConfig();
     const curr = params.currency || SUPPORTED_CURRENCIES[0];
     const amountStr = curr.amount.toFixed(2);
-    const orderId = `CVP_${Date.now()}`;
+    const orderId = `CVP-${Date.now()}`;
     const nameParts = (params.userName || 'CV Pilot User').trim().split(' ');
 
     const form = document.createElement('form');
@@ -139,7 +139,7 @@ export class GlobalPaymentService {
       cancel_url: `${window.location.origin}/?payment=cancelled`,
       notify_url: notifyUrl,
       order_id: orderId,
-      items: `CV PILOT Pro Membership (${this.formatPrice(curr)}/mo)`,
+      items: 'CVPilot Pro Monthly Membership',
       currency: curr.code,
       amount: amountStr,
       first_name: nameParts[0] || 'User',
