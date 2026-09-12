@@ -59,31 +59,18 @@ export class GlobalPaymentService {
    * Auto-detects Sandbox mode vs Live environment
    */
   static getPayHereConfig() {
+    // Clear any legacy local storage overrides to ensure .env is strictly honored
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('cvpilot_payhere_merchant_id');
+      localStorage.removeItem('cvpilot_payhere_secret');
+    }
+
     const env = (import.meta.env.VITE_PAYHERE_ENV || 'live').toLowerCase();
     
-    const envMerchantId = (import.meta.env.VITE_PAYHERE_MERCHANT_ID || '').trim();
-    const envSecret = (import.meta.env.VITE_PAYHERE_SECRET || import.meta.env.VITE_PAYHERE_SECRET_KEY || import.meta.env.VITE_PAYHERE_APP_SECRET || '').trim();
-
-    const storedMerchantId = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_merchant_id') : null;
-    const storedSecret = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_secret') : null;
-
-    let rawMerchantId = (envMerchantId || storedMerchantId || '261034').trim();
-    let merchantSecret = (envSecret || storedSecret || '').trim();
-    const appId = (import.meta.env.VITE_PAYHERE_APP_ID || '').trim();
-
-    // Enforce numeric merchant ID requirement
-    if (rawMerchantId && !/^\d+$/.test(rawMerchantId)) {
-      if (!merchantSecret) {
-        merchantSecret = rawMerchantId;
-      }
-      rawMerchantId = '261034';
-    }
-
-    if (appId && !/^\d+$/.test(appId) && !merchantSecret) {
-      merchantSecret = appId;
-    }
-
-    const merchantId = rawMerchantId || '261034';
+    // Strict Merchant ID: 261034
+    const merchantId = (import.meta.env.VITE_PAYHERE_MERCHANT_ID || '261034').trim();
+    // Strict Merchant Secret for MD5 signature calculation
+    const merchantSecret = (import.meta.env.VITE_PAYHERE_SECRET || 'MzkyMzE3OTkzODM1OTcyNDMyMTYzODUyOTgzNjQ0MTIwNDA4Nzc5Ng==').trim();
 
     const isExplicitSandbox = env === 'sandbox' || env === 'test';
     const isSandboxDefault = merchantId === '1220000';
