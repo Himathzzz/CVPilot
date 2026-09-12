@@ -3,7 +3,6 @@ import { useMembership } from '../context/MembershipContext';
 import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
 import {
-  SUPPORTED_CURRENCIES,
   GlobalPaymentService,
   type CurrencyConfig
 } from '../services/GlobalPaymentService';
@@ -12,10 +11,16 @@ export const UpgradeModal: React.FC = () => {
   const { isUpgradeModalOpen, closeUpgradeModal, downgradeToFree, isProMember } = useMembership();
   const { user } = useAuth();
 
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(() => GlobalPaymentService.getDefaultCurrency());
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'verifying' | 'success' | 'declined'>('idle');
   const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isUpgradeModalOpen) {
+      setSelectedCurrency(GlobalPaymentService.getDefaultCurrency());
+    }
+  }, [isUpgradeModalOpen]);
 
   const handleCancelSubscription = async () => {
     if (window.confirm('Are you sure you want to cancel your Pro Membership? You will revert to the free plan.')) {

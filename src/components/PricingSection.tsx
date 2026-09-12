@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import { useMembership } from '../context/MembershipContext';
 import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
-import { SUPPORTED_CURRENCIES, GlobalPaymentService, type CurrencyConfig } from '../services/GlobalPaymentService';
+import { GlobalPaymentService, type CurrencyConfig } from '../services/GlobalPaymentService';
 
 export const PricingSection: React.FC = () => {
   const { isProMember, openUpgradeModal } = useMembership();
   const { user, openAuthModal } = useAuth();
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(() => GlobalPaymentService.getDefaultCurrency());
+
+  React.useEffect(() => {
+    GlobalPaymentService.initGeoDetection((detected) => {
+      setSelectedCurrency(detected);
+    });
+  }, []);
 
   const handleProClick = () => {
     if (isProMember) return;

@@ -52,6 +52,121 @@ export class GlobalPaymentService {
   }
 
   /**
+   * Automatically detect if the user is visiting from Sri Lanka.
+   * Checks browser timezone (e.g. Asia/Colombo), browser languages (si, ta-LK, en-LK),
+   * and cached GeoIP data.
+   */
+  static isSriLankanUser(): boolean {
+    if (typeof window === 'undefined') return false;
+
+    // 1. TimeZone check (instant, reliable, zero network latency)
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timeZone === 'Asia/Colombo') {
+        return true;
+      }
+    } catch {
+      // ignore
+    }
+
+    // 2. Browser language / locale check
+    try {
+      const languages = navigator.languages || [navigator.language];
+      for (const lang of languages) {
+        const l = lang.toLowerCase();
+        if (l === 'si' || l.startsWith('si-') || l.endsWith('-lk') || l.includes('lk')) {
+          return true;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    // 3. Cached GeoIP check
+    try {
+      const cachedCountry = localStorage.getItem('cvpilot_detected_country');
+      if (cachedCountry === 'LK') {
+        return true;
+      }
+    } catch {
+      // ignore
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the default currency for the current visitor:
+   * 1. If user previously manually clicked a currency, use their preference.
+   * 2. If user is in Sri Lanka (Asia/Colombo timezone or LK locale), default to LKR.
+   * 3. For all other international visitors, default to USD.
+   */
+  static getDefaultCurrency(): CurrencyConfig {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedCode = localStorage.getItem('cvpilot_preferred_currency');
+        if (savedCode) {
+          const match = SUPPORTED_CURRENCIES.find(c => c.code === savedCode);
+          if (match) return match;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const isLK = this.isSriLankanUser();
+    const targetCode = isLK ? 'LKR' : 'USD';
+    return SUPPORTED_CURRENCIES.find(c => c.code === targetCode) || SUPPORTED_CURRENCIES[0];
+  }
+
+  /**
+   * Returns supported currencies ordered with the user's primary currency first
+   */
+  static getDisplayCurrencies(): CurrencyConfig[] {
+    const defaultCurr = this.getDefaultCurrency();
+    const primary = SUPPORTED_CURRENCIES.find(c => c.code === defaultCurr.code) || SUPPORTED_CURRENCIES[0];
+    const secondary = SUPPORTED_CURRENCIES.find(c => c.code !== defaultCurr.code) || SUPPORTED_CURRENCIES[1];
+    return [primary, secondary];
+  }
+
+  /**
+   * Save user's manual currency choice
+   */
+  static setPreferredCurrency(currency: CurrencyConfig) {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('cvpilot_preferred_currency', currency.code);
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  /**
+   * Lightweight background GeoIP lookup to further verify region
+   */
+  static initGeoDetection(onUpdate?: (currency: CurrencyConfig) => void) {
+    if (typeof window === 'undefined') return;
+    if (localStorage.getItem('cvpilot_detected_country')) return;
+
+    fetch('https://api.country.is', { signal: AbortSignal.timeout(3000) })
+      .then(res => res.json())
+      .then(data => {
+        if (data?.country) {
+          localStorage.setItem('cvpilot_detected_country', data.country);
+          if (!localStorage.getItem('cvpilot_preferred_currency') && onUpdate) {
+            const isLK = data.country === 'LK';
+            const curr = SUPPORTED_CURRENCIES.find(c => c.code === (isLK ? 'LKR' : 'USD'));
+            if (curr) onUpdate(curr);
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback silently to timezone detection
+      });
+  }
+
+  /**
    * PayHere Payment Gateway Configuration
    * Auto-detects Sandbox mode vs Live environment
    */
