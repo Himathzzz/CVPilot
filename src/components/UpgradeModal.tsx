@@ -164,19 +164,6 @@ export const UpgradeModal: React.FC = () => {
                   />
                 </div>
 
-                {/* Status Tag */}
-                <div>
-                  <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                    payHereConfig.isLive 
-                      ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
-                      : 'bg-amber-500/10 border border-amber-500/30 text-amber-400'
-                  }`}>
-                    <span className="material-symbols-outlined text-sm">
-                      {payHereConfig.isLive ? 'verified' : 'science'}
-                    </span>
-                    {payHereConfig.isLive ? 'PayHere Live Production' : 'PayHere Test Mode (Sandbox)'}
-                  </span>
-                </div>
 
                 {/* Notice if Sandbox ID is active */}
                 {payHereConfig.isSandboxDefault && (
