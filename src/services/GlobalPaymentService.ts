@@ -1,6 +1,4 @@
-/**
- * Global Payment Service - PayHere LK Payment Gateway Engine
- */
+import { md5 } from '../utils/md5';
 
 export interface CurrencyConfig {
   code: 'USD' | 'EUR' | 'GBP' | 'LKR' | 'INR';
@@ -36,8 +34,8 @@ export const PAYMENT_GATEWAYS: PaymentGatewayInfo[] = [
   {
     id: 'payhere',
     name: 'PayHere LK (Credit Cards & Mobile Wallets)',
-    badge: 'COMING SOON • Approval Pending',
-    description: 'PayHere online checkout is currently undergoing final merchant approval and will be enabled very shortly.',
+    badge: 'ACTIVE • Live Gateway',
+    description: 'PayHere live checkout is enabled. Pay securely with Credit/Debit Cards, eZ Cash, mCash & Sampath Vishwa.',
     icon: 'payments',
     supportedMethods: ['Visa', 'MasterCard', 'AMEX', 'eZ Cash', 'mCash', 'Sampath Vishwa'],
     developerPayoutNote: 'Direct Deposit to Sri Lankan Bank Account in LKR/USD',
@@ -61,19 +59,68 @@ export class GlobalPaymentService {
    * Auto-detects Sandbox mode vs Live environment
    */
   static getPayHereConfig() {
-    const env = (import.meta.env.VITE_PAYHERE_ENV || 'sandbox').toLowerCase();
-    const isLive = env === 'live' || env === 'production';
-    const merchantId = import.meta.env.VITE_PAYHERE_MERCHANT_ID || '1220000';
+    const env = (import.meta.env.VITE_PAYHERE_ENV || 'live').toLowerCase();
+    const storedMerchantId = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_merchant_id') : null;
+    const storedSecret = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_secret') : null;
+
+    let rawMerchantId = (storedMerchantId || import.meta.env.VITE_PAYHERE_MERCHANT_ID || '').trim();
+    let merchantSecret = (storedSecret || import.meta.env.VITE_PAYHERE_SECRET || import.meta.env.VITE_PAYHERE_SECRET_KEY || import.meta.env.VITE_PAYHERE_APP_SECRET || '').trim();
+    const appId = (import.meta.env.VITE_PAYHERE_APP_ID || '').trim();
+
+    // In PayHere LK, Merchant ID is ALWAYS a 7-digit numeric string (e.g. 1228581 or 1220000).
+    // If a non-numeric string (e.g. App Key / Secret) was passed as merchant ID, use it as merchantSecret.
+    if (rawMerchantId && !/^\d+$/.test(rawMerchantId)) {
+      if (!merchantSecret) {
+        merchantSecret = rawMerchantId;
+      }
+      rawMerchantId = '';
+    }
+
+    if (appId && !/^\d+$/.test(appId) && !merchantSecret) {
+      merchantSecret = appId;
+    }
+
+    const merchantId = rawMerchantId || '1220000';
+
+    // Default Sandbox test merchant ID is '1220000' (provided by PayHere.lk for testing).
+    // Submitting merchant_id=1220000 to www.payhere.lk (Live) fails with "can not find a business" error.
+    const isSandboxDefault = merchantId === '1220000';
+    const isExplicitSandbox = env === 'sandbox' || env === 'test';
+    const isLive = !isExplicitSandbox && !isSandboxDefault;
+
     const actionUrl = isLive
       ? 'https://www.payhere.lk/pay/checkout'
       : 'https://sandbox.payhere.lk/pay/checkout';
 
     return {
       isLive,
-      envName: isLive ? 'LIVE' : 'SANDBOX (Test Mode)',
+      isSandboxDefault,
+      envName: isLive ? 'LIVE PRODUCTION' : (isSandboxDefault ? 'SANDBOX (Test Mode)' : 'SANDBOX'),
       merchantId,
+      merchantSecret,
       actionUrl,
     };
+  }
+
+  static saveCustomPayHereCredentials(merchantId: string, secret: string) {
+    if (typeof window !== 'undefined') {
+      if (merchantId) localStorage.setItem('cvpilot_payhere_merchant_id', merchantId.trim());
+      else localStorage.removeItem('cvpilot_payhere_merchant_id');
+
+      if (secret) localStorage.setItem('cvpilot_payhere_secret', secret.trim());
+      else localStorage.removeItem('cvpilot_payhere_secret');
+    }
+  }
+
+  /**
+   * Generates MD5 Hash Security Signature for PayHere Checkout
+   * Format: MD5(merchant_id + order_id + amount + currency + UPPERCASE(MD5(merchant_secret))).toUpperCase()
+   */
+  static generatePayHereHash(merchantId: string, orderId: string, amountStr: string, currencyCode: string, merchantSecret: string): string {
+    if (!merchantSecret) return '';
+    const hashedSecret = md5(merchantSecret).toUpperCase();
+    const rawString = merchantId + orderId + amountStr + currencyCode + hashedSecret;
+    return md5(rawString).toUpperCase();
   }
 
   /**
@@ -88,18 +135,21 @@ export class GlobalPaymentService {
     const curr = params.currency || SUPPORTED_CURRENCIES[0];
     const amountStr = curr.amount.toFixed(2);
     const orderId = `CVP_${Date.now()}`;
-    const nameParts = (params.userName || 'Architect User').split(' ');
+    const nameParts = (params.userName || 'CV Pilot User').trim().split(' ');
 
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = config.actionUrl;
-    form.target = '_blank';
+    form.target = '_self'; // Redirect in same window to prevent popup blocker dismissal
+
+    const prodOrigin = import.meta.env.VITE_PUBLIC_URL || 'https://cvpilot.space';
+    const notifyUrl = `${prodOrigin}/api/webhooks`;
 
     const fields: Record<string, string> = {
       merchant_id: config.merchantId,
       return_url: `${window.location.origin}/?payment=success`,
       cancel_url: `${window.location.origin}/?payment=cancelled`,
-      notify_url: `${window.location.origin}/api/webhooks`,
+      notify_url: notifyUrl,
       order_id: orderId,
       items: `CV PILOT Pro Membership (${this.formatPrice(curr)}/mo)`,
       currency: curr.code,
@@ -114,6 +164,13 @@ export class GlobalPaymentService {
       custom_1: params.userEmail || 'guest',
     };
 
+    if (config.merchantSecret) {
+      const hash = this.generatePayHereHash(config.merchantId, orderId, amountStr, curr.code, config.merchantSecret);
+      if (hash) {
+        fields.hash = hash;
+      }
+    }
+
     Object.entries(fields).forEach(([key, val]) => {
       const input = document.createElement('input');
       input.type = 'hidden';
@@ -124,6 +181,5 @@ export class GlobalPaymentService {
 
     document.body.appendChild(form);
     form.submit();
-    document.body.removeChild(form);
   }
 }

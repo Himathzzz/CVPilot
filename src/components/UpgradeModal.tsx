@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useMembership } from '../context/MembershipContext';
+import { useAuth } from '../context/AuthContext';
 import { CurrencySelector } from './CurrencySelector';
 import { 
   SUPPORTED_CURRENCIES, 
@@ -7,14 +8,9 @@ import {
   type CurrencyConfig 
 } from '../services/GlobalPaymentService';
 
-declare global {
-  interface Window {
-    paypal?: any;
-  }
-}
-
 export const UpgradeModal: React.FC = () => {
   const { isUpgradeModalOpen, closeUpgradeModal, downgradeToFree, isProMember } = useMembership();
+  const { user } = useAuth();
   
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyConfig>(SUPPORTED_CURRENCIES[0]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -30,6 +26,24 @@ export const UpgradeModal: React.FC = () => {
     }
   };
 
+  const handlePayHereCheckout = () => {
+    try {
+      setIsProcessing(true);
+      setPaymentError(null);
+      GlobalPaymentService.submitPayHereCheckout({
+        userEmail: user?.email || undefined,
+        userName: user?.displayName || user?.email?.split('@')[0] || undefined,
+        currency: selectedCurrency,
+      });
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 3000);
+    } catch (err: any) {
+      setIsProcessing(false);
+      setPaymentError(err.message || 'Failed to initiate PayHere checkout.');
+    }
+  };
+
   // Reset state when modal opens
   useEffect(() => {
     if (isUpgradeModalOpen) {
@@ -41,7 +55,7 @@ export const UpgradeModal: React.FC = () => {
 
   if (!isUpgradeModalOpen) return null;
 
-
+  const payHereConfig = GlobalPaymentService.getPayHereConfig();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
@@ -135,7 +149,7 @@ export const UpgradeModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* PAYHERE COMING SOON SCREEN */}
+              {/* PAYHERE LIVE CHECKOUT CONTAINER */}
               <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center space-y-4 shadow-xl relative overflow-hidden">
                 {/* Background Decorative Mesh */}
                 <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
@@ -152,43 +166,93 @@ export const UpgradeModal: React.FC = () => {
 
                 {/* Status Tag */}
                 <div>
-                  <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-sm">schedule</span>
-                    PayHere Coming Soon...
+                  <span className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                    payHereConfig.isLive 
+                      ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
+                      : 'bg-amber-500/10 border border-amber-500/30 text-amber-400'
+                  }`}>
+                    <span className="material-symbols-outlined text-sm">
+                      {payHereConfig.isLive ? 'verified' : 'science'}
+                    </span>
+                    {payHereConfig.isLive ? 'PayHere Live Production' : 'PayHere Test Mode (Sandbox)'}
                   </span>
                 </div>
+
+                {/* Notice if Sandbox ID is active */}
+                {payHereConfig.isSandboxDefault && (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-left text-xs text-amber-300 space-y-1.5">
+                    <div className="font-bold flex items-center gap-1.5 text-amber-400">
+                      <span className="material-symbols-outlined text-base">info</span>
+                      Merchant ID Notice (Test Mode)
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-300">
+                      Test checkout is using PayHere Sandbox ID (<code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">1220000</code>). To process real customer payments, update <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">VITE_PAYHERE_MERCHANT_ID</code> in your <code className="bg-slate-800 px-1 py-0.5 rounded text-amber-300">.env</code> file with your approved Live Merchant ID from PayHere.lk!
+                    </p>
+                  </div>
+                )}
 
                 {/* Explanation Text */}
                 <div className="space-y-2 max-w-md mx-auto">
                   <h3 className="text-lg font-bold text-white">
-                    PayHere Payment Gateway Coming Soon!
+                    Secure Instant Checkout
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Online checkout via Credit/Debit Cards (Visa, MasterCard, AMEX), eZ Cash, mCash, and Sampath Vishwa will be enabled very shortly!
+                    Pay securely using Visa, MasterCard, AMEX, eZ Cash, mCash, or Sampath Vishwa bank transfers.
                   </p>
                 </div>
 
-                {/* Supported Features Checklist */}
-                <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700/80 text-left text-xs space-y-2 text-slate-300">
-                  <div className="font-bold text-white flex items-center gap-1.5 border-b border-slate-700/60 pb-2">
-                    <span className="material-symbols-outlined text-emerald-400 text-base">verified</span>
-                    Supported Payment Methods Upon Launch:
+                {/* Customer Info Confirmation */}
+                <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700/80 text-left text-xs space-y-1 text-slate-300">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-slate-400 font-medium">Billing Account:</span>
+                    <span className="font-bold text-white truncate max-w-[200px]">
+                      {user?.email || 'Guest User'}
+                    </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300 font-medium pt-1">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-slate-400 font-medium">Amount Due Today:</span>
+                    <span className="font-bold text-emerald-400">
+                      {GlobalPaymentService.formatPrice(selectedCurrency)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action CTA Button */}
+                <button
+                  type="button"
+                  onClick={handlePayHereCheckout}
+                  disabled={isProcessing}
+                  className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-600 text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 border border-blue-400/30"
+                >
+                  <span className="material-symbols-outlined text-xl">lock</span>
+                  {isProcessing ? 'Redirecting to PayHere...' : `Pay ${GlobalPaymentService.formatPrice(selectedCurrency)} via PayHere`}
+                </button>
+
+                {/* Supported Features & Payment Logos */}
+                <div className="p-3.5 bg-slate-800/50 rounded-xl border border-slate-700/60 text-left text-xs space-y-2">
+                  <div className="font-bold text-white flex items-center justify-between text-[11px]">
+                    <span className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-emerald-400 text-sm">shield</span>
+                      256-Bit SSL Encrypted Transaction
+                    </span>
+                    <span className="text-slate-400 text-[10px]">Instant Activation</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-300 font-medium pt-1 border-t border-slate-700/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-400">✓</span> Visa & MasterCard (LKR / USD)
+                      <span className="text-emerald-400">✓</span> Cards (Visa / MC / AMEX)
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-400">✓</span> American Express (AMEX)
+                      <span className="text-emerald-400">✓</span> eZ Cash & mCash
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-400">✓</span> eZ Cash & mCash Mobile Wallets
+                      <span className="text-emerald-400">✓</span> Sampath Vishwa Banking
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-400">✓</span> Sampath Vishwa Bank
+                      <span className="text-emerald-400">✓</span> 7-Day Money-Back Guarantee
                     </div>
                   </div>
                 </div>
+
               </div>
             </>
           )}
@@ -198,3 +262,4 @@ export const UpgradeModal: React.FC = () => {
     </div>
   );
 };
+

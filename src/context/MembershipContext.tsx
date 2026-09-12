@@ -38,6 +38,19 @@ export const MembershipProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState<boolean>(false);
   const storageKey = user ? `cvpilot_pro_membership_${user.uid}` : 'cvpilot_pro_membership_guest';
 
+  // Listen for PayHere payment gateway return redirect (?payment=success)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      setIsProMember(true);
+      localStorage.setItem(storageKey, 'true');
+      
+      // Clean up URL query parameters without reloading
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl || '/');
+    }
+  }, [storageKey]);
+
   // Load user membership whenever active user or auth loading state changes
   useEffect(() => {
     let isMounted = true;

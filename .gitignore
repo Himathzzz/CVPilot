@@ -16,6 +16,7 @@ dist-ssr
 # Environment variables & caches
 .env
 .env.*
+!.env.example
 .expo/
 
 # Editor directories and files
