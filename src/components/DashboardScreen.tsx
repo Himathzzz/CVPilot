@@ -248,7 +248,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </button>
               <button 
                 onClick={() => {
-                  const createdId = createNewResume();
+                  const createdId = createNewResume('modern-minimal', true);
                   if (createdId) onNavigateToBuilder();
                 }}
                 className="bg-navy dark:bg-slate-800 hover:bg-[#242f45] text-white font-bold font-label-caps text-xs uppercase px-5 py-3 rounded-xl hover:shadow-md transition-all flex items-center gap-2 border border-slate-700"
@@ -363,7 +363,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               {/* Create New Resume Card */}
               <div 
                 onClick={() => {
-                  const createdId = createNewResume();
+                  const createdId = createNewResume('modern-minimal', true);
                   if (createdId) onNavigateToBuilder();
                 }}
                 className="border border-gold border-dashed bg-surface-container-low dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900 transition-all cursor-pointer flex flex-col items-center justify-center p-xl h-full text-center group min-h-[220px] rounded shadow-xs"

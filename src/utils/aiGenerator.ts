@@ -88,15 +88,15 @@ export const suggestSkillsForRole = (jobTitle: string): SkillCategory[] => {
   ];
 };
 
-export const getEmptyResumeData = (): ResumeData => {
+export const getEmptyResumeData = (userDisplayName?: string, userEmail?: string): ResumeData => {
   return {
     title: 'New Resume',
     templateId: 'modern-minimal',
     themeColor: 'gold',
     personalInfo: {
-      fullName: '',
+      fullName: userDisplayName || '',
       jobTitle: '',
-      email: '',
+      email: userEmail || '',
       phone: '',
       location: '',
       website: '',

@@ -3,7 +3,7 @@ import { useAuth } from './AuthContext';
 import { useMembership } from './MembershipContext';
 import type { ResumeData } from '../types/resume';
 import type { TemplateConfig } from '../types/templateEngine';
-import { getInitialResumeData } from '../utils/aiGenerator';
+import { getInitialResumeData, getEmptyResumeData } from '../utils/aiGenerator';
 import { getTemplateConfigById } from '../data/templatePacks';
 import { db } from '../firebase';
 import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
@@ -22,7 +22,7 @@ interface ResumeContextType {
   resumes: SavedUserResume[];
   activeResumeId: string | null;
   activeResume: SavedUserResume | null;
-  createNewResume: (templateId?: string) => string | null;
+  createNewResume: (templateId?: string, isBlank?: boolean) => string | null;
   selectActiveResume: (id: string) => void;
   updateActiveResume: (data: ResumeData, config?: TemplateConfig) => void;
   deleteResume: (id: string) => void;
@@ -117,15 +117,44 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   };
 
-  const createNewResume = (templateId: string = 'modern-minimal'): string | null => {
+  const createNewResume = (templateId: string = 'modern-minimal', isBlank: boolean = true): string | null => {
     // Basic plan limit enforcement: Only 1 CV allowed for free users
     if (!isProMember && resumes.length >= 1) {
+      const confirmReset = window.confirm(
+        'Free Plan allows 1 CV. Would you like to start fresh with a blank CV on your current resume? (Click Cancel to keep your current CV or upgrade to Pro)'
+      );
+      if (confirmReset) {
+        const existingId = resumes[0].id;
+        const blankData = getEmptyResumeData(user?.displayName || undefined, user?.email || undefined);
+        blankData.templateId = templateId;
+        blankData.title = newResumeTitle(templateId);
+        const currentDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        const resetResume: SavedUserResume = {
+          ...resumes[0],
+          title: newResumeTitle(templateId),
+          templateId,
+          lastEdited: currentDate,
+          data: blankData,
+          config: getTemplateConfigById(templateId),
+        };
+        const updated = resumes.map(r => r.id === existingId ? resetResume : r);
+        setResumes(updated);
+        setActiveResumeId(existingId);
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+        localStorage.setItem('cvpilot_builder_draft_resume', JSON.stringify(blankData));
+        saveResumeToCloud(resetResume);
+        return existingId;
+      }
       openUpgradeModal();
       return null;
     }
 
     const newId = 'res_' + Date.now();
-    const initialData = getInitialResumeData(user?.displayName || undefined, user?.email || undefined);
+    const initialData = isBlank
+      ? getEmptyResumeData(user?.displayName || undefined, user?.email || undefined)
+      : getInitialResumeData(user?.displayName || undefined, user?.email || undefined);
+
     initialData.templateId = templateId;
     initialData.title = `Resume - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
@@ -144,6 +173,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setResumes(updated);
     setActiveResumeId(newId);
     localStorage.setItem(storageKey, JSON.stringify(updated));
+    localStorage.setItem('cvpilot_builder_draft_resume', JSON.stringify(initialData));
     saveResumeToCloud(newResume);
 
     return newId;

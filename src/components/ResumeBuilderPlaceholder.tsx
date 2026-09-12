@@ -53,11 +53,11 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
         // fallback
       }
     }
-    const initial = getInitialResumeData(user?.displayName || undefined, user?.email || undefined);
+    const blank = getEmptyResumeData(user?.displayName || undefined, user?.email || undefined);
     if (initialTemplate) {
-      initial.templateId = initialTemplate;
+      blank.templateId = initialTemplate;
     }
-    return initial;
+    return blank;
   });
 
   // Current Template JSON Config State
@@ -67,6 +67,18 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
     }
     return getTemplateConfigById(initialTemplate || 'modern-minimal');
   });
+
+  // Sync state whenever the active resume changes (e.g., clicking Create Blank or selecting another CV)
+  const prevActiveResumeIdRef = useRef<string | null>(activeResume?.id || null);
+  React.useEffect(() => {
+    if (activeResume && activeResume.id !== prevActiveResumeIdRef.current) {
+      prevActiveResumeIdRef.current = activeResume.id;
+      setResumeData(activeResume.data);
+      if (activeResume.config) {
+        setCurrentConfig(activeResume.config);
+      }
+    }
+  }, [activeResume]);
 
   // Automatically save changes to context and localStorage draft
   React.useEffect(() => {
@@ -85,7 +97,7 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
   // AI Loading States
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [aiNotification, setAiNotification] = useState<string | null>(null);
-  const [targetRoleInput, setTargetRoleInput] = useState(resumeData.personalInfo.jobTitle || 'Full Stack Engineer');
+  const [targetRoleInput, setTargetRoleInput] = useState(resumeData.personalInfo.jobTitle || '');
 
   const showNotification = (msg: string) => {
     setAiNotification(msg);
@@ -269,8 +281,11 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
 
   const handleClearAll = () => {
     if (window.confirm('Clear all fields and start with a blank CV?')) {
+      const blank = getEmptyResumeData(user?.displayName || undefined, user?.email || undefined);
+      if (currentConfig?.id) blank.templateId = currentConfig.id;
       localStorage.removeItem('cvpilot_builder_draft_resume');
-      setResumeData(getEmptyResumeData());
+      setResumeData(blank);
+      updateActiveResume(blank, currentConfig);
       showNotification('CV fields cleared to start fresh!');
     }
   };
@@ -585,6 +600,20 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
               </div>
 
               <div className="space-y-4">
+                {resumeData.experiences.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 text-xs space-y-2">
+                    <span className="material-symbols-outlined text-2xl text-slate-400 block mx-auto">work_outline</span>
+                    <p>No work history added yet.</p>
+                    <button
+                      type="button"
+                      onClick={handleAddExperience}
+                      className="px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-1 uppercase text-[11px]"
+                    >
+                      <span className="material-symbols-outlined text-sm">add_circle</span>
+                      Add First Position
+                    </button>
+                  </div>
+                )}
                 {resumeData.experiences.map((exp, idx) => (
                   <div key={exp.id} className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
                     <div className="flex justify-between items-center">
@@ -697,6 +726,20 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
               </div>
 
               <div className="space-y-4">
+                {resumeData.education.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 text-xs space-y-2">
+                    <span className="material-symbols-outlined text-2xl text-slate-400 block mx-auto">school</span>
+                    <p>No education or degrees added yet.</p>
+                    <button
+                      type="button"
+                      onClick={handleAddEducation}
+                      className="px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-1 uppercase text-[11px]"
+                    >
+                      <span className="material-symbols-outlined text-sm">add_circle</span>
+                      Add Education
+                    </button>
+                  </div>
+                )}
                 {resumeData.education.map((edu, idx) => (
                   <div key={edu.id} className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
                     <div className="flex justify-between items-center">
@@ -790,6 +833,20 @@ export const ResumeBuilderPlaceholder: React.FC<ResumeBuilderProps> = ({
               </div>
 
               <div className="space-y-3">
+                {resumeData.skillCategories.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 text-xs space-y-2">
+                    <span className="material-symbols-outlined text-2xl text-slate-400 block mx-auto">psychology</span>
+                    <p>No skills added yet.</p>
+                    <button
+                      type="button"
+                      onClick={handleAddSkillCategory}
+                      className="px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-1 uppercase text-[11px]"
+                    >
+                      <span className="material-symbols-outlined text-sm">add_circle</span>
+                      Add Skill Group
+                    </button>
+                  </div>
+                )}
                 {resumeData.skillCategories.map((cat) => (
                   <div key={cat.id} className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                     <div>
