@@ -38,11 +38,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onBuildResumeClick, on
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left Column Text & CTAs */}
         <div className="lg:col-span-7 space-y-6 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/20 text-gold border border-gold/40 text-xs font-bold uppercase tracking-wider">
-            <span className="material-symbols-outlined text-sm">smart_toy</span>
-            AI-Powered ChatGPT Resume Copilot
-          </div>
-
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.1]">
             Create Your Professional Resume <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-500">in Minutes</span>
           </h1>
