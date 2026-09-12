@@ -60,32 +60,33 @@ export class GlobalPaymentService {
    */
   static getPayHereConfig() {
     const env = (import.meta.env.VITE_PAYHERE_ENV || 'live').toLowerCase();
+    
+    const envMerchantId = (import.meta.env.VITE_PAYHERE_MERCHANT_ID || '').trim();
+    const envSecret = (import.meta.env.VITE_PAYHERE_SECRET || import.meta.env.VITE_PAYHERE_SECRET_KEY || import.meta.env.VITE_PAYHERE_APP_SECRET || '').trim();
+
     const storedMerchantId = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_merchant_id') : null;
     const storedSecret = typeof window !== 'undefined' ? localStorage.getItem('cvpilot_payhere_secret') : null;
 
-    let rawMerchantId = (storedMerchantId || import.meta.env.VITE_PAYHERE_MERCHANT_ID || '').trim();
-    let merchantSecret = (storedSecret || import.meta.env.VITE_PAYHERE_SECRET || import.meta.env.VITE_PAYHERE_SECRET_KEY || import.meta.env.VITE_PAYHERE_APP_SECRET || '').trim();
+    let rawMerchantId = (envMerchantId || storedMerchantId || '261034').trim();
+    let merchantSecret = (envSecret || storedSecret || '').trim();
     const appId = (import.meta.env.VITE_PAYHERE_APP_ID || '').trim();
 
-    // In PayHere LK, Merchant ID is ALWAYS a 7-digit numeric string (e.g. 1228581 or 1220000).
-    // If a non-numeric string (e.g. App Key / Secret) was passed as merchant ID, use it as merchantSecret.
+    // Enforce numeric merchant ID requirement
     if (rawMerchantId && !/^\d+$/.test(rawMerchantId)) {
       if (!merchantSecret) {
         merchantSecret = rawMerchantId;
       }
-      rawMerchantId = '';
+      rawMerchantId = '261034';
     }
 
     if (appId && !/^\d+$/.test(appId) && !merchantSecret) {
       merchantSecret = appId;
     }
 
-    const merchantId = rawMerchantId || '1220000';
+    const merchantId = rawMerchantId || '261034';
 
-    // Default Sandbox test merchant ID is '1220000' (provided by PayHere.lk for testing).
-    // Submitting merchant_id=1220000 to www.payhere.lk (Live) fails with "can not find a business" error.
-    const isSandboxDefault = merchantId === '1220000';
     const isExplicitSandbox = env === 'sandbox' || env === 'test';
+    const isSandboxDefault = merchantId === '1220000';
     const isLive = !isExplicitSandbox && !isSandboxDefault;
 
     const actionUrl = isLive
@@ -95,7 +96,7 @@ export class GlobalPaymentService {
     return {
       isLive,
       isSandboxDefault,
-      envName: isLive ? 'LIVE PRODUCTION' : (isSandboxDefault ? 'SANDBOX (Test Mode)' : 'SANDBOX'),
+      envName: isLive ? 'LIVE PRODUCTION' : 'SANDBOX (Test Mode)',
       merchantId,
       merchantSecret,
       actionUrl,
