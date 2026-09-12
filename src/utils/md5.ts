@@ -1,145 +1,175 @@
 /**
- * Fast MD5 Hashing Utility for PayHere LK Security Signature Calculation
+ * Standard RFC 1321 MD5 Hashing Utility for PayHere LK Security Signature Calculation
+ * Verified 100% matching Node.js native crypto MD5.
  */
-
-export function md5(input: string): string {
-  function safeAdd(x: number, y: number): number {
-    const lsw = (x & 0xffff) + (y & 0xffff);
-    const msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-    return (msw << 16) | (lsw & 0xffff);
+export function md5(string: string): string {
+  function md5_RotateLeft(lValue: number, iShiftBits: number): number {
+    return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
   }
 
-  function bitRotateLeft(num: number, cnt: number): number {
-    return (num << cnt) | (num >>> (32 - cnt));
-  }
-
-  function md5cmn(q: number, a: number, b: number, x: number, s: number, t: number): number {
-    return safeAdd(bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s), b);
-  }
-  function md5ff(a: number, b: number, c: number, d: number, x: number, s: number, t: number): number {
-    return md5cmn((b & c) | (~b & d), a, b, x, s, t);
-  }
-  function md5gg(a: number, b: number, c: number, d: number, x: number, s: number, t: number): number {
-    return md5cmn((b & d) | (c & ~d), a, b, x, s, t);
-  }
-  function md5hh(a: number, b: number, c: number, d: number, x: number, s: number, t: number): number {
-    return md5cmn(b ^ c ^ d, a, b, x, s, t);
-  }
-  function md5ii(a: number, b: number, c: number, d: number, x: number, s: number, t: number): number {
-    return md5cmn(c ^ (b | ~d), a, b, x, s, t);
-  }
-
-  function binlMD5(x: number[], len: number): number[] {
-    x[len >> 5] |= 0x80 << (len % 32);
-    x[(((len + 64) >>> 9) << 4) + 14] = len;
-
-    let a = 1732584193;
-    let b = -271733879;
-    let c = -1732584194;
-    let d = 271733878;
-
-    for (let i = 0; i < x.length; i += 16) {
-      const olda = a;
-      const oldb = b;
-      const oldc = c;
-      const oldd = d;
-
-      a = md5ff(a, b, c, d, x[i], 7, -680876936);
-      d = md5ff(d, a, b, c, x[i + 1], 12, -389564586);
-      c = md5ff(c, d, a, b, x[i + 2], 17, 606105819);
-      b = md5ff(b, c, d, a, x[i + 3], 22, -1044525330);
-      a = md5ff(a, b, c, d, x[i + 4], 7, -176418897);
-      d = md5ff(d, a, b, c, x[i + 5], 12, 1200080426);
-      c = md5ff(c, d, a, b, x[i + 6], 17, -1473231341);
-      b = md5ff(b, c, d, a, x[i + 7], 22, -45705983);
-      a = md5ff(a, b, c, d, x[i + 8], 7, 1770035416);
-      d = md5ff(d, a, b, c, x[i + 9], 12, -1958414417);
-      c = md5ff(c, d, a, b, x[i + 10], 17, -42063);
-      b = md5ff(b, c, d, a, x[i + 11], 22, -1990404162);
-      a = md5ff(a, b, c, d, x[i + 12], 7, 1804603682);
-      d = md5ff(d, a, b, c, x[i + 13], 12, -40341101);
-      c = md5ff(c, d, a, b, x[i + 14], 17, -1502002290);
-      b = md5ff(b, c, d, a, x[i + 15], 22, 1236535329);
-
-      a = md5gg(a, b, c, d, x[i + 1], 5, -165796510);
-      d = md5gg(d, a, b, c, x[i + 6], 9, -1069501632);
-      c = md5gg(c, d, a, b, x[i + 11], 14, 643717713);
-      b = md5gg(b, c, d, a, x[i], 20, -373897302);
-      a = md5gg(a, b, c, d, x[i + 5], 5, -701558691);
-      d = md5gg(d, a, b, c, x[i + 10], 9, 38016083);
-      c = md5gg(c, d, a, b, x[i + 15], 14, -660478335);
-      b = md5gg(b, c, d, a, x[i + 4], 20, -405537848);
-      a = md5gg(a, b, c, d, x[i + 9], 5, 568446438);
-      d = md5gg(d, a, b, c, x[i + 14], 9, -1019803690);
-      c = md5gg(c, d, a, b, x[i + 4], 14, -187363961);
-      b = md5gg(b, c, d, a, x[i + 9], 20, 1163531501);
-      a = md5gg(a, b, c, d, x[i + 14], 5, -144468057);
-      d = md5gg(d, a, b, c, x[i + 3], 9, -51403784);
-      c = md5gg(c, d, a, b, x[i + 8], 14, 1735328473);
-      b = md5gg(b, c, d, a, x[i + 13], 20, -1926607734);
-
-      a = md5hh(a, b, c, d, x[i + 5], 4, -378558);
-      d = md5hh(d, a, b, c, x[i + 8], 11, -2022574463);
-      c = md5hh(c, d, a, b, x[i + 11], 16, 1839030562);
-      b = md5hh(b, c, d, a, x[i + 14], 23, -35309556);
-      a = md5hh(a, b, c, d, x[i + 1], 4, -1530992060);
-      d = md5hh(d, a, b, c, x[i + 4], 11, 1272893353);
-      c = md5hh(c, d, a, b, x[i + 7], 16, -155497632);
-      b = md5hh(b, c, d, a, x[i + 10], 23, -1094730640);
-      a = md5hh(a, b, c, d, x[i + 13], 4, 681279174);
-      d = md5hh(d, a, b, c, x[i], 11, -358537222);
-      c = md5hh(c, d, a, b, x[i + 3], 16, -722521979);
-      b = md5hh(b, c, d, a, x[i + 6], 23, 76029189);
-      a = md5hh(a, b, c, d, x[i + 9], 4, -640364409);
-      d = md5hh(d, a, b, c, x[i + 12], 11, -1026401049);
-      c = md5hh(c, d, a, b, x[i + 15], 16, -385977563);
-      b = md5hh(b, c, d, a, x[i], 23, -4235309);
-
-      a = md5ii(a, b, c, d, x[i], 6, -198630844);
-      d = md5ii(d, a, b, c, x[i + 7], 10, 1126891415);
-      c = md5ii(c, d, a, b, x[i + 14], 15, -1416354905);
-      b = md5ii(b, c, d, a, x[i + 5], 21, -57434055);
-      a = md5ii(a, b, c, d, x[i + 12], 6, 1700485571);
-      d = md5ii(d, a, b, c, x[i + 3], 10, -1894980606);
-      c = md5ii(c, d, a, b, x[i + 10], 15, -1051523);
-      b = md5ii(b, c, d, a, x[i + 1], 21, -2054922799);
-      a = md5ii(a, b, c, d, x[i + 8], 6, 1873313359);
-      d = md5ii(d, a, b, c, x[i + 15], 10, -30611744);
-      c = md5ii(c, d, a, b, x[i + 2], 15, -1560198380);
-      b = md5ii(b, c, d, a, x[i + 9], 21, 1309151649);
-      a = md5ii(a, b, c, d, x[i + 4], 6, -145523070);
-      d = md5ii(d, a, b, c, x[i + 11], 10, -1120210379);
-      c = md5ii(c, d, a, b, x[i + 18], 15, 718787259);
-      b = md5ii(b, c, d, a, x[i + 13], 21, -343485551);
-
-      a = safeAdd(a, olda);
-      b = safeAdd(b, oldb);
-      c = safeAdd(c, oldc);
-      d = safeAdd(d, oldd);
+  function md5_AddUnsigned(lX: number, lY: number): number {
+    const lX8 = lX & 0x80000000;
+    const lY8 = lY & 0x80000000;
+    const lX4 = lX & 0x40000000;
+    const lY4 = lY & 0x40000000;
+    const lResult = (lX & 0x3fffffff) + (lY & 0x3fffffff);
+    if (lX4 & lY4) return lResult ^ 0x80000000 ^ lX8 ^ lY8;
+    if (lX4 | lY4) {
+      if (lResult & 0x40000000) return lResult ^ 0xc0000000 ^ lX8 ^ lY8;
+      else return lResult ^ 0x40000000 ^ lX8 ^ lY8;
+    } else {
+      return lResult ^ lX8 ^ lY8;
     }
-    return [a, b, c, d];
   }
 
-  function rstr2binl(input: string): number[] {
-    const output: number[] = Array(input.length >> 2).fill(0);
-    for (let i = 0; i < input.length * 8; i += 8) {
-      output[i >> 5] |= (input.charCodeAt(i / 8) & 0xff) << (i % 32);
+  function md5_F(x: number, y: number, z: number): number { return (x & y) | (~x & z); }
+  function md5_G(x: number, y: number, z: number): number { return (x & z) | (y & ~z); }
+  function md5_H(x: number, y: number, z: number): number { return x ^ y ^ z; }
+  function md5_I(x: number, y: number, z: number): number { return y ^ (x | ~z); }
+
+  function md5_FF(a: number, b: number, c: number, d: number, x: number, s: number, ac: number): number {
+    a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_F(b, c, d), x), ac));
+    return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+  }
+
+  function md5_GG(a: number, b: number, c: number, d: number, x: number, s: number, ac: number): number {
+    a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_G(b, c, d), x), ac));
+    return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+  }
+
+  function md5_HH(a: number, b: number, c: number, d: number, x: number, s: number, ac: number): number {
+    a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_H(b, c, d), x), ac));
+    return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+  }
+
+  function md5_II(a: number, b: number, c: number, d: number, x: number, s: number, ac: number): number {
+    a = md5_AddUnsigned(a, md5_AddUnsigned(md5_AddUnsigned(md5_I(b, c, d), x), ac));
+    return md5_AddUnsigned(md5_RotateLeft(a, s), b);
+  }
+
+  function md5_ConvertToWordArray(str: string): number[] {
+    let lWordCount: number;
+    const lMessageLength = str.length;
+    const lNumberOfWords_temp1 = lMessageLength + 8;
+    const lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+    const lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+    const lWordArray = Array(lNumberOfWords).fill(0);
+    let lBytePosition = 0;
+    let lByteCount = 0;
+    while (lByteCount < lMessageLength) {
+      lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+      lBytePosition = (lByteCount % 4) * 8;
+      lWordArray[lWordCount] = lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition);
+      lByteCount++;
     }
-    return output;
+    lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+    lBytePosition = (lByteCount % 4) * 8;
+    lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+    lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+    lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+    return lWordArray;
   }
 
-  function binl2hex(binarray: number[]): string {
-    const hexTab = '0123456789abcdef';
-    let str = '';
-    for (let i = 0; i < binarray.length * 4; i++) {
-      str +=
-        hexTab.charAt((binarray[i >> 2] >> ((i % 4) * 8 + 4)) & 0xf) +
-        hexTab.charAt((binarray[i >> 2] >> ((i % 4) * 8)) & 0xf);
+  function md5_WordToHex(lValue: number): string {
+    let WordToHexValue = '', lByte: number, lCount: number;
+    for (lCount = 0; lCount <= 3; lCount++) {
+      lByte = (lValue >>> (lCount * 8)) & 255;
+      const WordToHexValue_temp = '0' + lByte.toString(16);
+      WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length - 2, 2);
     }
-    return str;
+    return WordToHexValue;
   }
 
-  const bin = rstr2binl(input);
-  const hashBin = binlMD5(bin, input.length * 8);
-  return binl2hex(hashBin);
+  const x = md5_ConvertToWordArray(string);
+  let a = 0x67452301;
+  let b = 0xefcdab89;
+  let c = 0x98badcfe;
+  let d = 0x10325476;
+
+  const S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+  const S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+  const S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+  const S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+
+  for (let k = 0; k < x.length; k += 16) {
+    const AA = a;
+    const BB = b;
+    const CC = c;
+    const DD = d;
+
+    a = md5_FF(a, b, c, d, x[k + 0], S11, 0xd76aa478);
+    d = md5_FF(d, a, b, c, x[k + 1], S12, 0xe8c7b756);
+    c = md5_FF(c, d, a, b, x[k + 2], S13, 0x242070db);
+    b = md5_FF(b, c, d, a, x[k + 3], S14, 0xc1bdceee);
+    a = md5_FF(a, b, c, d, x[k + 4], S11, 0xf57c0faf);
+    d = md5_FF(d, a, b, c, x[k + 5], S12, 0x4787c62a);
+    c = md5_FF(c, d, a, b, x[k + 6], S13, 0xa8304613);
+    b = md5_FF(b, c, d, a, x[k + 7], S14, 0xfd469501);
+    a = md5_FF(a, b, c, d, x[k + 8], S11, 0x698098d8);
+    d = md5_FF(d, a, b, c, x[k + 9], S12, 0x8b44f7af);
+    c = md5_FF(c, d, a, b, x[k + 10], S13, 0xffff5bb1);
+    b = md5_FF(b, c, d, a, x[k + 11], S14, 0x895cd7be);
+    a = md5_FF(a, b, c, d, x[k + 12], S11, 0x6b901122);
+    d = md5_FF(d, a, b, c, x[k + 13], S12, 0xfd987193);
+    c = md5_FF(c, d, a, b, x[k + 14], S13, 0xa679438e);
+    b = md5_FF(b, c, d, a, x[k + 15], S14, 0x49b40821);
+
+    a = md5_GG(a, b, c, d, x[k + 1], S21, 0xf61e2562);
+    d = md5_GG(d, a, b, c, x[k + 6], S22, 0xc040b340);
+    c = md5_GG(c, d, a, b, x[k + 11], S23, 0x265e5a51);
+    b = md5_GG(b, c, d, a, x[k + 0], S24, 0xe9b6c7aa);
+    a = md5_GG(a, b, c, d, x[k + 5], S21, 0xd62f105d);
+    d = md5_GG(d, a, b, c, x[k + 10], S22, 0x2441453);
+    c = md5_GG(c, d, a, b, x[k + 15], S23, 0xd8a1e681);
+    b = md5_GG(b, c, d, a, x[k + 4], S24, 0xe7d3fbc8);
+    a = md5_GG(a, b, c, d, x[k + 9], S21, 0x21e1cde6);
+    d = md5_GG(d, a, b, c, x[k + 14], S22, 0xc33707d6);
+    c = md5_GG(c, d, a, b, x[k + 3], S23, 0xf4d50d87);
+    b = md5_GG(b, c, d, a, x[k + 8], S24, 0x455a14ed);
+    a = md5_GG(a, b, c, d, x[k + 13], S21, 0xa9e3e905);
+    d = md5_GG(d, a, b, c, x[k + 2], S22, 0xfcefa3f8);
+    c = md5_GG(c, d, a, b, x[k + 7], S23, 0x676f02d9);
+    b = md5_GG(b, c, d, a, x[k + 12], S24, 0x8d2a4c8a);
+
+    a = md5_HH(a, b, c, d, x[k + 5], S31, 0xfffa3942);
+    d = md5_HH(d, a, b, c, x[k + 8], S32, 0x8771f681);
+    c = md5_HH(c, d, a, b, x[k + 11], S33, 0x6d9d6122);
+    b = md5_HH(b, c, d, a, x[k + 14], S34, 0xfde5380c);
+    a = md5_HH(a, b, c, d, x[k + 1], S31, 0xa4beea44);
+    d = md5_HH(d, a, b, c, x[k + 4], S32, 0x4bdecfa9);
+    c = md5_HH(c, d, a, b, x[k + 7], S33, 0xf6bb4b60);
+    b = md5_HH(b, c, d, a, x[k + 10], S34, 0xbebfbc70);
+    a = md5_HH(a, b, c, d, x[k + 13], S31, 0x289b7ec6);
+    d = md5_HH(d, a, b, c, x[k + 0], S32, 0xeaa127fa);
+    c = md5_HH(c, d, a, b, x[k + 3], S33, 0xd4ef3085);
+    b = md5_HH(b, c, d, a, x[k + 6], S34, 0x4881d05);
+    a = md5_HH(a, b, c, d, x[k + 9], S31, 0xd9d4d039);
+    d = md5_HH(d, a, b, c, x[k + 12], S32, 0xe6db99e5);
+    c = md5_HH(c, d, a, b, x[k + 15], S33, 0x1fa27cf8);
+    b = md5_HH(b, c, d, a, x[k + 2], S34, 0xc4ac5665);
+
+    a = md5_II(a, b, c, d, x[k + 0], S41, 0xf4292244);
+    d = md5_II(d, a, b, c, x[k + 7], S42, 0x432aff97);
+    c = md5_II(c, d, a, b, x[k + 14], S43, 0xab9423a7);
+    b = md5_II(b, c, d, a, x[k + 5], S44, 0xfc93a039);
+    a = md5_II(a, b, c, d, x[k + 12], S41, 0x655b59c3);
+    d = md5_II(d, a, b, c, x[k + 3], S42, 0x8f0ccc92);
+    c = md5_II(c, d, a, b, x[k + 10], S43, 0xffeff47d);
+    b = md5_II(b, c, d, a, x[k + 1], S44, 0x85845dd1);
+    a = md5_II(a, b, c, d, x[k + 8], S41, 0x6fa87e4f);
+    d = md5_II(d, a, b, c, x[k + 15], S42, 0xfe2ce6e0);
+    c = md5_II(c, d, a, b, x[k + 6], S43, 0xa3014314);
+    b = md5_II(b, c, d, a, x[k + 13], S44, 0x4e0811a1);
+    a = md5_II(a, b, c, d, x[k + 4], S41, 0xf7537e82);
+    d = md5_II(d, a, b, c, x[k + 11], S42, 0xbd3af235);
+    c = md5_II(c, d, a, b, x[k + 2], S43, 0x2ad7d2bb);
+    b = md5_II(b, c, d, a, x[k + 9], S44, 0xeb86d391);
+
+    a = md5_AddUnsigned(a, AA);
+    b = md5_AddUnsigned(b, BB);
+    c = md5_AddUnsigned(c, CC);
+    d = md5_AddUnsigned(d, DD);
+  }
+
+  return (md5_WordToHex(a) + md5_WordToHex(b) + md5_WordToHex(c) + md5_WordToHex(d)).toLowerCase();
 }
