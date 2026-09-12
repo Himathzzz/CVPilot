@@ -1,0 +1,10 @@
+# robots.txt for CVPilot (https://cvpilot.space)
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /builder
+Disallow: /chat
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://cvpilot.space/sitemap.xml
