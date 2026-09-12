@@ -10,8 +10,8 @@ export interface CurrencyConfig {
 }
 
 export const SUPPORTED_CURRENCIES: CurrencyConfig[] = [
-  { code: 'LKR', symbol: 'LKR ', amount: 2000, monthlyText: 'LKR 2,000 / month', name: 'Sri Lankan Rupee', flag: '🇱🇰' },
   { code: 'USD', symbol: '$', amount: 10.00, monthlyText: '$10.00 / month', name: 'US Dollar', flag: '🇺🇸' },
+  { code: 'LKR', symbol: 'LKR ', amount: 2000, monthlyText: 'LKR 2,000 / month', name: 'Sri Lankan Rupee', flag: '🇱🇰' },
 ];
 
 export type PaymentGatewayId = 'payhere';
