@@ -17,7 +17,7 @@ interface DashboardScreenProps {
 export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBuilder, onNavigateToHome, onNavigateToAIChat }) => {
   const { user, logout } = useAuth();
   const { isProMember, openUpgradeModal } = useMembership();
-  const { resumes, createNewResume, selectActiveResume, deleteResume } = useResumes();
+  const { resumes, createNewResume, selectActiveResume } = useResumes();
   const getInitialTab = (): 'resumes' | 'builder' | 'templates' | 'settings' => {
     const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
     if (path === '/settings') return 'settings';
@@ -326,16 +326,6 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                           title="Edit Resume"
                         >
                           <span className="material-symbols-outlined text-[20px]">edit</span>
-                        </button>
-                        <button 
-                          className="text-navy dark:text-slate-300 hover:text-error p-1" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteResume(res.id);
-                          }}
-                          title="Delete Resume"
-                        >
-                          <span className="material-symbols-outlined text-[20px]">delete</span>
                         </button>
                       </div>
                     </div>
