@@ -5,6 +5,7 @@ import { CurrencySelector } from '../CurrencySelector';
 import { GlobalPaymentService, type CurrencyConfig } from '../../services/GlobalPaymentService';
 import { Navbar } from '../Navbar';
 import { Footer } from '../Footer';
+import { AdSenseBanner } from '../ads/AdSenseBanner';
 
 interface PricingPageProps {
   onNavigateHome: () => void;
@@ -196,6 +197,9 @@ export const PricingPage: React.FC<PricingPageProps> = ({
             </div>
 
           </div>
+
+          {/* Google AdSense Banner (Hidden for Pro Members) */}
+          <AdSenseBanner slotId="" format="auto" className="my-10" />
 
           {/* Frequently Asked Questions */}
           <div className="max-w-4xl mx-auto space-y-6">

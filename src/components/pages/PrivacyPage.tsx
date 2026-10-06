@@ -90,10 +90,18 @@ export const PrivacyPage: React.FC<PrivacyPageProps> = ({
               </section>
 
               <section className="space-y-3">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">5. Cookies & Local Storage</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">5. Cookies, Analytics & Third-Party Advertising (Google AdSense)</h2>
                 <p>
-                  We use essential local storage and cookie tokens solely for maintaining user authentication state, current theme settings (Light/Dark mode), and session security. We do not use third-party cross-site tracking cookies or sell user browsing habits.
+                  We use essential local storage and session tokens solely for maintaining user authentication state, current theme settings (Light/Dark mode), and session security.
                 </p>
+                <p>
+                  In addition, we partner with third-party vendors, including <strong>Google AdSense</strong>, to serve advertisements on our website. Please take note of the following advertising disclosures:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-xs md:text-sm">
+                  <li>Third-party vendors, including Google, use cookies to serve ads based on your prior visits to this website or other websites on the internet.</li>
+                  <li>Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visits to our site and/or other sites across the internet.</li>
+                  <li>Users may opt out of personalized advertising by visiting Google's <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline font-semibold">Ads Settings</a> or by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline font-semibold">www.aboutads.info</a>.</li>
+                </ul>
               </section>
 
               <section className="space-y-3">

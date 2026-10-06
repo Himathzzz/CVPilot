@@ -21,6 +21,7 @@ import { PrivacyPage } from './components/pages/PrivacyPage';
 import { RefundPage } from './components/pages/RefundPage';
 import { ContactPage } from './components/pages/ContactPage';
 import { AIChatResumeBuilder } from './components/AIChatResumeBuilder';
+import { AdSenseBanner } from './components/ads/AdSenseBanner';
 import type { ResumeTemplateId } from './types/resume';
 
 type ViewMode = 'home' | 'dashboard' | 'builder' | 'chat' | 'pricing' | 'terms' | 'privacy' | 'refunds' | 'contact';
@@ -249,6 +250,10 @@ const MainContent: React.FC = () => {
         <div id="process">
           <ProcessSection />
         </div>
+        
+        {/* Google AdSense Responsive Banner */}
+        <AdSenseBanner slotId="" format="auto" className="my-10" />
+
         <PricingSection />
         <SuccessStories />
       </main>

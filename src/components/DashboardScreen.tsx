@@ -7,6 +7,7 @@ import { TemplateLibraryModal } from './TemplateLibraryModal';
 import { UpgradeModal } from './UpgradeModal';
 import { ThemeToggle } from './ThemeToggle';
 import { SettingsView } from './dashboard/SettingsView';
+import { AdSenseBanner } from './ads/AdSenseBanner';
 
 interface DashboardScreenProps {
   onNavigateToBuilder: (templateId?: ResumeTemplateId) => void;
@@ -301,7 +302,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                     <div className="flex justify-between items-start mb-4">
                       <div className="p-2 bg-surface-container-low dark:bg-slate-800 rounded border border-outline-variant dark:border-slate-700">
                         <span className="material-symbols-outlined text-gold">
-                          {res.data.personalInfo.jobTitle?.toLowerCase().includes('engineer') || res.data.personalInfo.jobTitle?.toLowerCase().includes('developer') ? 'code' : 'work'}
+                          {res.data?.personalInfo?.jobTitle?.toLowerCase().includes('engineer') || res.data?.personalInfo?.jobTitle?.toLowerCase().includes('developer') ? 'code' : 'work'}
                         </span>
                       </div>
                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -331,10 +332,10 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                     </div>
                     <h3 className="font-display text-h2 text-navy dark:text-white font-semibold mb-1 truncate">{res.title}</h3>
                     <p className="font-caption text-caption text-navy dark:text-slate-400 mb-4 opacity-80 truncate">
-                      {res.data.personalInfo.jobTitle || 'Professional Resume'}
+                      {res.data?.personalInfo?.jobTitle || 'Professional Resume'}
                     </p>
                     <div className="flex flex-wrap gap-1.5 mt-auto">
-                      {res.data.skillCategories[0]?.skills.slice(0, 2).map((skill, idx) => (
+                      {res.data?.skillCategories?.[0]?.skills?.slice(0, 2).map((skill, idx) => (
                         <span key={idx} className="px-2 py-0.5 border border-outline-variant dark:border-slate-700 bg-surface-container-low dark:bg-slate-800 rounded font-caption text-caption text-navy dark:text-slate-200 font-medium text-[11px]">
                           {skill}
                         </span>
@@ -503,6 +504,9 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
             </>
           )}
         </div>
+
+        {/* Google AdSense Banner (Hidden for Pro Members) */}
+        <AdSenseBanner slotId="" format="auto" className="my-6 max-w-4xl" />
 
         {/* Footer */}
         <footer className="w-full py-xl border-t border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto mt-xl transition-colors duration-300">
