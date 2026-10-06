@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { MembershipProvider } from './context/MembershipContext';
+import { MembershipProvider, useMembership } from './context/MembershipContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { ResumeProvider } from './context/ResumeContext';
+import { ResumeProvider, useResumes } from './context/ResumeContext';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { AIFeaturesSection } from './components/AIFeaturesSection';
@@ -42,6 +42,8 @@ const getPathView = (pathname: string): ViewMode => {
 const MainContent: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewMode>(() => getPathView(window.location.pathname));
   const { user, openAuthModal } = useAuth();
+  const { isProMember, openUpgradeModal } = useMembership();
+  const { resumes } = useResumes();
 
   const navigateTo = (view: ViewMode, path: string) => {
     setCurrentView(view);
@@ -79,6 +81,10 @@ const MainContent: React.FC = () => {
 
   const handleBuildResumeClick = () => {
     if (user) {
+      if (!isProMember && resumes.length >= 1) {
+        navigateTo('dashboard', '/dashboard');
+        return;
+      }
       navigateTo('builder', '/builder');
     } else {
       openAuthModal();
@@ -94,6 +100,10 @@ const MainContent: React.FC = () => {
   };
 
   const handleSelectTemplateFromGallery = (templateId: ResumeTemplateId) => {
+    if (user && !isProMember && resumes.length >= 1) {
+      openUpgradeModal();
+      return;
+    }
     setSelectedTemplate(templateId);
     if (user) {
       navigateTo('builder', '/builder');

@@ -4,6 +4,7 @@ import { useMembership } from '../context/MembershipContext';
 import { useResumes } from '../context/ResumeContext';
 import type { ResumeTemplateId } from '../types/resume';
 import { TemplateLibraryModal } from './TemplateLibraryModal';
+import { TemplatePreviewModal } from './TemplatePreviewModal';
 import { UpgradeModal } from './UpgradeModal';
 import { ThemeToggle } from './ThemeToggle';
 import { SettingsView } from './dashboard/SettingsView';
@@ -28,6 +29,19 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
   const [activeTab, setActiveTab] = useState<'resumes' | 'builder' | 'templates' | 'settings'>(getInitialTab);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState<boolean>(false);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
+
+  const isFreeLimitReached = !isProMember && resumes.length >= 1;
+
+  const handleSuggestedTemplateClick = (templateId: string) => {
+    if (isFreeLimitReached) {
+      setPreviewTemplateId(templateId);
+      setIsPreviewModalOpen(true);
+    } else {
+      onNavigateToBuilder(templateId as ResumeTemplateId);
+    }
+  };
 
   const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
 
@@ -412,9 +426,17 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
           {/* Suggested Templates */}
           <section>
             <div className="flex items-center justify-between mb-md border-b border-outline-variant dark:border-slate-800 pb-sm">
-              <h2 className="font-label-caps text-label-caps uppercase text-navy dark:text-slate-200 font-semibold tracking-wider">
-                Suggested Templates
-              </h2>
+              <div className="flex items-center gap-2.5">
+                <h2 className="font-label-caps text-label-caps uppercase text-navy dark:text-slate-200 font-semibold tracking-wider">
+                  Suggested Templates
+                </h2>
+                {isFreeLimitReached && (
+                  <span className="bg-amber-500/20 text-amber-500 dark:text-amber-300 border border-amber-500/40 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[12px]">lock</span>
+                    Preview Only (1 CV Limit Reached)
+                  </span>
+                )}
+              </div>
               <button onClick={() => setActiveTab('templates')} className="font-label-caps text-label-caps text-gold hover:underline font-medium">
                 Browse Library
               </button>
@@ -422,8 +444,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-md">
               {/* Template 1: Modern */}
-              <div className="group cursor-pointer" onClick={() => onNavigateToBuilder('modern')}>
+              <div className="group cursor-pointer" onClick={() => handleSuggestedTemplateClick('modern')}>
                 <div className="aspect-[1/1.4] border border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-900 mb-sm overflow-hidden relative rounded shadow-xs p-3 flex flex-col justify-between">
+                  {isFreeLimitReached && (
+                    <div className="absolute top-2 right-2 z-10 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider flex items-center gap-1 backdrop-blur-xs shadow-xs">
+                      <span className="material-symbols-outlined text-xs">lock</span>
+                      PRO
+                    </div>
+                  )}
                   <div className="border-b border-gold pb-1">
                     <div className="w-12 h-2 bg-navy dark:bg-slate-200 rounded mb-1"></div>
                     <div className="w-8 h-1 bg-gold rounded"></div>
@@ -433,8 +461,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                     <div className="w-3/4 h-1 bg-gray-200 dark:bg-slate-700 rounded"></div>
                   </div>
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/20 dark:group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-navy text-white px-3 py-1 text-xs font-bold rounded shadow-md border border-gold">
-                      USE MODERN
+                    <button className={`opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1 text-xs font-bold rounded shadow-md border flex items-center gap-1 ${
+                      isFreeLimitReached
+                        ? 'bg-navy text-white border-amber-400'
+                        : 'bg-navy text-white border-gold'
+                    }`}>
+                      {isFreeLimitReached && <span className="material-symbols-outlined text-xs text-amber-400">visibility</span>}
+                      {isFreeLimitReached ? 'PREVIEW TEMPLATE' : 'USE MODERN'}
                     </button>
                   </div>
                 </div>
@@ -443,8 +476,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </div>
 
               {/* Template 2: Executive */}
-              <div className="group cursor-pointer" onClick={() => onNavigateToBuilder('executive')}>
+              <div className="group cursor-pointer" onClick={() => handleSuggestedTemplateClick('executive')}>
                 <div className="aspect-[1/1.4] border border-navy bg-navy mb-sm overflow-hidden relative rounded shadow-xs p-3 text-white flex flex-col justify-between">
+                  {isFreeLimitReached && (
+                    <div className="absolute top-2 right-2 z-10 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider flex items-center gap-1 backdrop-blur-xs shadow-xs">
+                      <span className="material-symbols-outlined text-xs">lock</span>
+                      PRO
+                    </div>
+                  )}
                   <div className="border-b border-white/20 pb-2">
                     <div className="w-16 h-2 bg-gold rounded mb-1"></div>
                     <div className="w-10 h-1 bg-white/60 rounded"></div>
@@ -453,8 +492,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                     <div className="w-full h-1 bg-white/40 rounded"></div>
                   </div>
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/40 transition-colors flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-gold text-navy px-3 py-1 text-xs font-bold rounded shadow-md">
-                      USE EXECUTIVE
+                    <button className={`opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1 text-xs font-bold rounded shadow-md flex items-center gap-1 ${
+                      isFreeLimitReached
+                        ? 'bg-navy text-white border border-amber-400'
+                        : 'bg-gold text-navy'
+                    }`}>
+                      {isFreeLimitReached && <span className="material-symbols-outlined text-xs text-amber-400">visibility</span>}
+                      {isFreeLimitReached ? 'PREVIEW TEMPLATE' : 'USE EXECUTIVE'}
                     </button>
                   </div>
                 </div>
@@ -463,8 +507,14 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </div>
 
               {/* Template 3: Creative */}
-              <div className="group cursor-pointer" onClick={() => onNavigateToBuilder('creative')}>
+              <div className="group cursor-pointer" onClick={() => handleSuggestedTemplateClick('creative')}>
                 <div className="aspect-[1/1.4] border border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-900 mb-sm overflow-hidden relative rounded shadow-xs grid grid-cols-3">
+                  {isFreeLimitReached && (
+                    <div className="absolute top-2 right-2 z-10 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider flex items-center gap-1 backdrop-blur-xs shadow-xs">
+                      <span className="material-symbols-outlined text-xs">lock</span>
+                      PRO
+                    </div>
+                  )}
                   <div className="bg-gray-900 p-2 flex flex-col justify-between">
                     <div className="w-4 h-4 rounded bg-gold"></div>
                     <div className="w-full h-1 bg-gray-600 rounded"></div>
@@ -474,8 +524,13 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
                     <div className="w-3/4 h-1 bg-gray-300 dark:bg-slate-700 rounded"></div>
                   </div>
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/20 dark:group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-navy text-white px-3 py-1 text-xs font-bold rounded shadow-md border border-gold">
-                      USE CREATIVE
+                    <button className={`opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1 text-xs font-bold rounded shadow-md border flex items-center gap-1 ${
+                      isFreeLimitReached
+                        ? 'bg-navy text-white border-amber-400'
+                        : 'bg-navy text-white border-gold'
+                    }`}>
+                      {isFreeLimitReached && <span className="material-symbols-outlined text-xs text-amber-400">visibility</span>}
+                      {isFreeLimitReached ? 'PREVIEW TEMPLATE' : 'USE CREATIVE'}
                     </button>
                   </div>
                 </div>
@@ -484,15 +539,26 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
               </div>
 
               {/* Template 4: Compact */}
-              <div className="group cursor-pointer" onClick={() => onNavigateToBuilder('compact')}>
+              <div className="group cursor-pointer" onClick={() => handleSuggestedTemplateClick('compact')}>
                 <div className="aspect-[1/1.4] border border-outline-variant dark:border-slate-800 bg-white dark:bg-slate-900 mb-sm overflow-hidden relative rounded shadow-xs p-2 space-y-1.5 text-center">
+                  {isFreeLimitReached && (
+                    <div className="absolute top-2 right-2 z-10 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5 rounded font-black tracking-wider flex items-center gap-1 backdrop-blur-xs shadow-xs">
+                      <span className="material-symbols-outlined text-xs">lock</span>
+                      PRO
+                    </div>
+                  )}
                   <div className="w-14 h-2 bg-gray-800 dark:bg-slate-300 mx-auto rounded"></div>
                   <div className="w-full h-[1px] bg-gray-400 dark:bg-slate-700"></div>
                   <div className="w-full h-1 bg-gray-200 dark:bg-slate-700 rounded"></div>
                   <div className="w-full h-1 bg-gray-200 dark:bg-slate-700 rounded"></div>
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/20 dark:group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <button className="opacity-0 group-hover:opacity-100 transition-opacity bg-navy text-white px-3 py-1 text-xs font-bold rounded shadow-md border border-gold">
-                      USE COMPACT
+                    <button className={`opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1 text-xs font-bold rounded shadow-md border flex items-center gap-1 ${
+                      isFreeLimitReached
+                        ? 'bg-navy text-white border-amber-400'
+                        : 'bg-navy text-white border-gold'
+                    }`}>
+                      {isFreeLimitReached && <span className="material-symbols-outlined text-xs text-amber-400">visibility</span>}
+                      {isFreeLimitReached ? 'PREVIEW TEMPLATE' : 'USE COMPACT'}
                     </button>
                   </div>
                 </div>
@@ -533,7 +599,24 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onNavigateToBu
         isOpen={isLibraryOpen}
         onClose={() => setIsLibraryOpen(false)}
         onSelectTemplateConfig={(config) => onNavigateToBuilder(config.id)}
+        onPreviewTemplateConfig={(config) => {
+          setPreviewTemplateId(config.id);
+          setIsPreviewModalOpen(true);
+          setIsLibraryOpen(false);
+        }}
       />
+
+      {/* Template Preview Modal (For Locked Templates on Free Plan) */}
+      {previewTemplateId && (
+        <TemplatePreviewModal 
+          isOpen={isPreviewModalOpen}
+          onClose={() => {
+            setIsPreviewModalOpen(false);
+            setPreviewTemplateId(null);
+          }}
+          templateId={previewTemplateId}
+        />
+      )}
 
       {/* Pro Upgrade Modal */}
       <UpgradeModal />

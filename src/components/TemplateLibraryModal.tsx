@@ -2,11 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { TEMPLATE_PACKS } from '../data/templatePacks';
 import type { TemplateConfig } from '../types/templateEngine';
 import { useMembership } from '../context/MembershipContext';
+import { useResumes } from '../context/ResumeContext';
 
 interface TemplateLibraryModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectTemplateConfig: (config: TemplateConfig) => void;
+  onPreviewTemplateConfig?: (config: TemplateConfig) => void;
   selectedTemplateId?: string;
 }
 
@@ -32,9 +34,13 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
   isOpen,
   onClose,
   onSelectTemplateConfig,
+  onPreviewTemplateConfig,
   selectedTemplateId
 }) => {
   const { isProMember, openUpgradeModal } = useMembership();
+  const { resumes } = useResumes();
+  const isFreeLimitReached = !isProMember && resumes.length >= 1;
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [filterType, setFilterType] = useState<'all' | 'free' | 'pro'>('all');
   const [columnFilter, setColumnFilter] = useState<'all' | 'one-column' | 'two-column'>('all');
@@ -76,6 +82,14 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
   if (!isOpen) return null;
 
   const handleSelect = (tpl: TemplateConfig) => {
+    if (isFreeLimitReached) {
+      if (onPreviewTemplateConfig) {
+        onPreviewTemplateConfig(tpl);
+      } else {
+        onSelectTemplateConfig(tpl);
+      }
+      return;
+    }
     if (tpl.isPremium && !isProMember) {
       openUpgradeModal();
       return;
@@ -119,6 +133,24 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Free Plan Limit Lock Notice */}
+        {isFreeLimitReached && (
+          <div className="bg-amber-500/10 dark:bg-amber-500/20 border-b border-amber-500/30 px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-800 dark:text-amber-200 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-amber-500 text-base">lock</span>
+              <span>
+                <strong>Free Limit Reached (1 CV Created):</strong> All templates are in Preview Mode. You cannot create a resume with your details using these templates on the Free Plan.
+              </span>
+            </div>
+            <button
+              onClick={openUpgradeModal}
+              className="bg-gold hover:bg-amber-400 text-navy font-black text-[11px] px-3 py-1 rounded-md uppercase tracking-wider transition-colors border border-gold shrink-0"
+            >
+              Unlock with Pro
+            </button>
+          </div>
+        )}
 
         {/* Filter Controls Bar */}
         <div className="p-4 bg-surface-container-low dark:bg-slate-900 border-b border-outline-variant dark:border-slate-800 flex flex-wrap justify-between items-center gap-3 shrink-0">
@@ -291,10 +323,10 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
 
                       {/* Tier & ATS Badges */}
                       <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-1">
-                        {tpl.isPremium ? (
+                        {tpl.isPremium || isFreeLimitReached ? (
                           <span className="bg-navy text-gold text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm flex items-center gap-1 border border-gold/40">
                             <span className="material-symbols-outlined text-xs">lock</span>
-                            PRO LKR 2,000/MO
+                            {isFreeLimitReached ? 'LOCKED • PRO' : 'PRO LKR 2,000/MO'}
                           </span>
                         ) : (
                           <span className="bg-emerald-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded shadow-sm">
@@ -319,8 +351,10 @@ export const TemplateLibraryModal: React.FC<TemplateLibraryModalProps> = ({
                       {/* Hover Overlay CTA */}
                       <div className="absolute inset-0 bg-navy/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3">
                         <span className="bg-navy text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg border border-gold uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-sm text-gold">tune</span>
-                          Customize & Apply
+                          <span className="material-symbols-outlined text-sm text-gold">
+                            {isFreeLimitReached ? 'visibility' : 'tune'}
+                          </span>
+                          {isFreeLimitReached ? 'Preview Template (Locked)' : 'Customize & Apply'}
                         </span>
                       </div>
                     </div>
